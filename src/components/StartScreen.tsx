@@ -5,6 +5,7 @@ import { Mic } from "lucide-react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import Moodboard from "@/components/Moodboard"
 
 export function MoodCreator() {
   const [inputValue, setInputValue] = useState("")
@@ -26,6 +27,10 @@ export function MoodCreator() {
 
   const handleMoodSelect = (mood: string) => {
     setSelectedMood(mood === selectedMood ? null : mood)
+  }
+
+  if (selectedMood === "dusty-peach") {
+    return <Moodboard />;
   }
 
   return (

@@ -1,7 +1,9 @@
 import type { Config } from "tailwindcss"
+import animatePlugin from "tailwindcss-animate"
+import plugin from "tailwindcss/plugin"
 
-const config = {
-  darkMode: ["class"],
+const config: Config = {
+  darkMode: "class",
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
@@ -84,14 +86,44 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        fadeIn: {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        slideUp: {
+          "0%": { opacity: "0", transform: "translateY(20px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        pulse: {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.5" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        fadeIn: "fadeIn 0.8s ease-out forwards",
+        slideUp: "slideUp 0.8s ease-out forwards",
+        pulse: "pulse 2s ease-in-out infinite",
+      },
+      boxShadow: {
+        subtle: "0 10px 30px -15px rgba(78, 46, 32, 0.1)",
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    animatePlugin,
+    plugin((api) => {
+      const { addUtilities, e } = api as any;
+      const animationDelayUtilities: Record<string, { "animation-delay": string }> = {};
+      for (let i = 1; i <= 10; i++) {
+        animationDelayUtilities[`.${e(`animation-delay-${i * 100}`)}`] = {
+          "animation-delay": `${i * 0.1}s`,
+        };
+      }
+      addUtilities(animationDelayUtilities);
+    }),
+  ],
 } satisfies Config
 
 export default config
