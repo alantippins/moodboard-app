@@ -6,9 +6,10 @@ import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Moodboard from "@/components/Moodboard"
+import { palettes } from "@/data/palettes"
 
 export function MoodCreator() {
-  const [inputValue, setInputValue] = useState("")
+  const [inputValue, setInputValue] = useState("");
   const [selectedMood, setSelectedMood] = useState<string | null>(null)
 
   // Animation variants
@@ -29,8 +30,10 @@ export function MoodCreator() {
     setSelectedMood(mood === selectedMood ? null : mood)
   }
 
-  if (selectedMood === "dusty-peach") {
-    return <Moodboard />;
+  if (selectedMood) {
+    // Normalize mood for palette lookup (replace dashes with spaces, lowercase)
+    const normalizedMood = selectedMood.replace(/-/g, ' ').toLowerCase();
+    return <Moodboard mood={normalizedMood} onBack={() => setSelectedMood(null)} />;
   }
 
   return (
@@ -48,16 +51,17 @@ export function MoodCreator() {
 
       <div className="relative mb-4">
         <Input
-          type="text"
-          placeholder="Try &quot;dusty peach&quot;"
+          placeholder="Try 'dusty peach'"
           value={inputValue}
+
           onChange={(e) => setInputValue(e.target.value)}
-          className="h-12 pl-4 pr-12 rounded-full border-[#d5d7da] text-[#717680] focus:border-[#64748b] focus:ring-0"
+          className="h-12 pl-4 pr-12 rounded-lg border-[#d5d7da] text-[#717680] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5b4fc] focus:border-[#64748b] transition-all duration-200"
+          aria-label="Type a mood word"
         />
         <Button
           variant="ghost"
           size="icon"
-          className="absolute right-2 top-1/2 -translate-y-1/2 text-[#717680] hover:text-[#535862] hover:bg-transparent"
+          className="absolute right-2 top-1/2 -translate-y-1/2 text-[#717680] hover:text-[#535862] hover:bg-transparent cursor-pointer"
         >
           <Mic className="h-5 w-5" />
           <span className="sr-only">Use voice input</span>
@@ -79,13 +83,22 @@ export function MoodCreator() {
         >
           <Button
             variant="outline"
-            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors duration-300 ${
+            className={`rounded-lg px-4 py-2 text-sm font-medium flex items-center gap-1 transition-colors duration-300 cursor-pointer shadow-none outline-none ring-0 focus:ring-0 focus-visible:ring-0 border-2 ${
               selectedMood === "brutalist"
-                ? "bg-[#f7f7f7] border-[#535862]"
-                : "bg-white border-[#d5d7da] text-[#717680] hover:bg-[#f7f7f7]"
+                ? "bg-[#F2E9E4] border-[#535862]"
+                : "bg-[#F2E9E4] border-transparent text-[#717680] hover:bg-[#f7f7f7] hover:border-transparent"
             }`}
             onClick={() => handleMoodSelect("brutalist")}
           >
+            <motion.span
+              className="flex items-center"
+              style={{ width: 24, height: 24 }}
+              whileHover={{ scale: 1.15, rotate: -8 }}
+              whileTap={{ scale: 0.95, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 18 }}
+            >
+              {palettes["brutalist"].svg({ width: 24, height: 24 })}
+            </motion.span>
             Brutalist
           </Button>
         </motion.div>
@@ -99,10 +112,10 @@ export function MoodCreator() {
         >
           <Button
             variant="outline"
-            className={`rounded-full px-4 py-2 text-sm font-medium flex items-center gap-1 transition-colors duration-300 ${
+            className={`rounded-lg px-4 py-2 text-sm font-medium flex items-center gap-1 transition-colors duration-300 cursor-pointer shadow-none outline-none ring-0 focus:ring-0 focus-visible:ring-0 border-2 ${
               selectedMood === "celestial"
-                ? "bg-[#eef4fd] border-[#d7c7ff] text-[#5f5086]"
-                : "bg-[#eef4fd] border-[#d7c7ff] text-[#5f5086] hover:bg-[#d7c7ff]/20"
+                ? "bg-[#eef4fd] border-[#5f5086] text-[#5f5086]"
+                : "bg-[#eef4fd] border-transparent text-[#5f5086] hover:bg-[#eef4fd]/70 hover:border-transparent"
             }`}
             onClick={() => handleMoodSelect("celestial")}
           >
@@ -118,7 +131,15 @@ export function MoodCreator() {
                   : {}
               }
             >
-              ✧
+            </motion.span>
+            <motion.span
+              className="flex items-center"
+              style={{ width: 24, height: 24 }}
+              whileHover={{ scale: 1.15, rotate: 8 }}
+              whileTap={{ scale: 0.95, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 18 }}
+            >
+              {palettes["celestial"].svg({ width: 24, height: 24 })}
             </motion.span>
             Celestial
           </Button>
@@ -133,10 +154,10 @@ export function MoodCreator() {
         >
           <Button
             variant="outline"
-            className={`rounded-full px-4 py-2 text-sm font-medium flex items-center gap-1 transition-colors duration-300 ${
+            className={`rounded-lg px-4 py-2 text-sm font-medium flex items-center gap-1 transition-colors duration-300 cursor-pointer shadow-none outline-none ring-0 focus:ring-0 focus-visible:ring-0 border-2 ${
               selectedMood === "dusty-peach"
                 ? "bg-[#ffeee6] border-[#d8a48f] text-[#8d543d]"
-                : "bg-[#ffeee6] border-[#d8a48f] text-[#8d543d] hover:bg-[#ffeee6]/70"
+                : "bg-[#ffeee6] border-transparent text-[#8d543d] hover:bg-[#ffeee6]/70 hover:border-transparent"
             }`}
             onClick={() => handleMoodSelect("dusty-peach")}
           >
@@ -152,7 +173,15 @@ export function MoodCreator() {
                   : {}
               }
             >
-              🍑
+            </motion.span>
+            <motion.span
+              className="flex items-center"
+              style={{ width: 24, height: 24 }}
+              whileHover={{ scale: 1.15, rotate: 8 }}
+              whileTap={{ scale: 0.95, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 18 }}
+            >
+              {palettes["dusty peach"].svg({ width: 24, height: 24 })}
             </motion.span>
             Dusty Peach
           </Button>
