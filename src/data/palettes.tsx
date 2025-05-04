@@ -25,7 +25,7 @@ export const palettes: Record<string, Palette> = {
     swatches: ["#F3DED3", "#D8A48F", "#8D543D", "#4E2E20"],
     fontPrimary: "Playfair Display",
     fontSecondary: "Inter",
-    audio: "lofi-loop.mp3",
+    audio: "rainy-lofi-city-music.mp3",
     svg: (props) => (
       <DustyPeachIcon
         color1="#F3DED3"

@@ -2,8 +2,9 @@
 
 import Link from "next/link"
 import { ArrowLeft, Play, Shuffle, Share, Upload } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { motion } from "framer-motion"
+import { Howl } from "howler"
 
 import { palettes } from "@/data/palettes"
 
@@ -13,6 +14,8 @@ type MoodboardProps = {
 }
 
 export default function Moodboard({ mood, onBack }: MoodboardProps) {
+  const soundRef = useRef<Howl | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -163,27 +166,70 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
 
         {/* Audio Card */}
         <div className="col-span-6 rounded-lg" style={{ background: palette.accent }}>
-          <div className="p-6 flex items-center justify-center  transition-all duration-500 group">
-            <motion.button
-  className="flex flex-col items-center transition-all duration-300 outline-none ring-0 focus:ring-0 focus-visible:ring-0 cursor-pointer"
-  style={{ color: palette.headingColor }}
-  whileHover={{ scale: 1.08 }}
-  whileTap={{ scale: 0.96 }}
-  aria-label={`Play ${palette.audio.replace(/[-_]/g, ' ').replace(/\.mp3$/, '')}`}
->
-
-              <Play className="h-12 w-12 mb-2" fill={palette.headingColor} />
-              <span>{palette.audio.replace(/[-_]/g, ' ').replace(/\.mp3$/, '')}</span>
-            </motion.button>
+           <div className="p-6 flex flex-col items-center justify-center h-full w-full transition-all duration-500 group">
+             <div className="flex flex-col items-center justify-center w-full h-full" style={{ minHeight: 220 }}>
+                <div className="flex flex-col items-center justify-center" style={{ height: 120 }}>
+                  {!isPlaying ? (
+                    <motion.button
+                      className="flex flex-col items-center justify-center transition-all duration-300 outline-none ring-0 focus:ring-0 focus-visible:ring-0 cursor-pointer"
+                      style={{ color: palette.headingColor, background: 'transparent' }}
+                      whileHover={{ scale: 1.08 }}
+                      whileTap={{ scale: 0.96 }}
+                      aria-label={`Play ${palette.audio.replace(/[-_]/g, ' ').replace(/\.mp3$/, '')}`}
+                      onClick={() => {
+                        if (!soundRef.current) {
+                          const sound = new Howl({
+                            src: ["/audio/" + palette.audio],
+                            onend: () => setIsPlaying(false),
+                            onloaderror: () => {
+                              alert("Audio file could not be loaded. Please check file path.");
+                              setIsPlaying(false);
+                            },
+                          });
+                          soundRef.current = sound;
+                        }
+                        soundRef.current.play();
+                        setIsPlaying(true);
+                      }}
+                    >
+                      <Play className="h-16 w-16 mb-2" fill={palette.headingColor} />
+                    </motion.button>
+                  ) : (
+                    <motion.button
+                      className="flex flex-col items-center justify-center transition-all duration-300 outline-none ring-0 focus:ring-0 focus-visible:ring-0 cursor-pointer"
+                      style={{ color: palette.headingColor, background: 'transparent' }}
+                      whileHover={{ scale: 1.08 }}
+                      whileTap={{ scale: 0.96 }}
+                      aria-label="Stop audio"
+                      onClick={() => {
+                        if (soundRef.current) {
+                          soundRef.current.stop();
+                          setIsPlaying(false);
+                        }
+                      }}
+                    >
+                      <svg className="h-16 w-16 mb-2" viewBox="0 0 24 24" fill={palette.headingColor} stroke={palette.headingColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ borderRadius: 8 }}>
+                        <rect x="6" y="6" width="12" height="12" rx="3" />
+                      </svg>
+                    </motion.button>
+                  )}
+                </div>
+                <div className="text-xl text-center mt-0" style={{ color: palette.headingColor, minHeight: 32, fontWeight: 400 }}>
+                  {isPlaying
+                    ? <>Now playing &quot;{palette.audio.replace(/[-_]/g, ' ').replace(/\.mp3$/, '')}&quot;</>
+                    : <>{palette.audio.replace(/[-_]/g, ' ').replace(/\.mp3$/, '')}</>
+                  }
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
 
         {/* Color Swatches */}
         <div className="col-span-6 grid grid-cols-2 gap-4">
           {palette.swatches.map((color: string, i: number) => (
             <div
               key={color}
-              className="rounded-lg h-20 flex items-center justify-center text-lg font-mono border border-transparent transition-all duration-300 select-text cursor-pointer"
+              className="rounded-lg flex items-center justify-center text-lg font-mono border border-transparent transition-all duration-300 select-text cursor-pointer"
               style={{ background: color, color: i === 0 ? palette.headingColor : palette.background }}
               aria-label={color}
             >
@@ -193,8 +239,8 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
         </div>
       </div>
 
-      {/* Footer with animation */}
       <footer className="mt-12 text-right">
+        {/* Footer with animation */}
         <p className="text-sm text-[#4e2e20]">
           Created with{" "}
           <Link
@@ -206,5 +252,5 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
         </p>
       </footer>
     </div>
-  )
+  );
 }
