@@ -9,25 +9,24 @@ type DustyPeachIconProps = React.SVGProps<SVGSVGElement> & {
 export function DustyPeachIcon({ color1 = "#f3ded3", color2 = "#8d543d", color3 = "#d8a48f", ...props }: DustyPeachIconProps) {
   return (
     <svg width="240" height="280" viewBox="0 0 240 280" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <rect width="240" height="280" rx="24" fill={color1}/>
       <path d="M40 90 a80 80 0 0 0 160 0" fill={color2}/>
       <path d="M40 170 a80 80 0 0 0 160 0" fill={color3}/>
     </svg>
   );
 }
 
-type BrutalistIconProps = React.SVGProps<SVGSVGElement> & {
+type StoneIconProps = React.SVGProps<SVGSVGElement> & {
   color1?: string;
   color2?: string;
-  color3?: string;
 };
 
-export function BrutalistIcon({ color1 = "#22223b", color2 = "#9a8c98", color3 = "#f2e9e4", ...props }: BrutalistIconProps) {
+export function StoneIcon({ color1 = "#B0B0B0", color2 = "#B0B0B0", ...props }: StoneIconProps) {
   return (
-    <svg width="240" height="280" viewBox="0 0 240 280" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <rect width="240" height="280" rx="0" fill={color1}/>
-      <rect x="40" y="40" width="160" height="80" fill={color2}/>
-      <rect x="40" y="140" width="160" height="40" fill={color3}/>
+    <svg width="100%" height="100%" viewBox="0 0 316 316" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+      {/* Top Stone */}
+      <path d="M220 70c0 40-35 60-90 60S40 100 40 70 75 10 130 10s90 50 90 60z" fill={color1} />
+      {/* Bottom Stone */}
+      <path d="M260 220c0 60-60 70-120 50S20 230 60 160s140-60 180-30 20 90 20 90z" fill={color2} />
     </svg>
   );
 }
@@ -36,16 +35,23 @@ type CelestialIconProps = React.SVGProps<SVGSVGElement> & {
   color1?: string;
   color2?: string;
   color3?: string;
-  color4?: string;
 };
 
-export function CelestialIcon({ color1 = "#eef4fd", color2 = "#d7c7ff", color3 = "#5f5086", color4 = "#717680", ...props }: CelestialIconProps) {
+export function CelestialIcon({ color1 = "#E3D3DE", color2 = "#8A7692", color3 = "#383A69", ...props }: CelestialIconProps) {
   return (
-    <svg width="240" height="280" viewBox="0 0 240 280" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <rect width="240" height="280" rx="24" fill={color1}/>
-      <circle cx="120" cy="100" r="60" fill={color2}/>
-      <circle cx="120" cy="200" r="40" fill={color3}/>
-      <circle cx="170" cy="170" r="15" fill={color4}/>
+    <svg width="150" height="150" viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <g clipPath="url(#celestialClip)">
+        <circle cx="75" cy="75" r="75" fill={color1} />
+        <circle cx="150" cy="0" r="75" fill={color2} />
+        <circle cx="0" cy="0" r="75" fill={color3} />
+        <circle cx="0" cy="150" r="75" fill={color2} />
+        <circle cx="150" cy="150" r="75" fill={color3} />
+      </g>
+      <defs>
+        <clipPath id="celestialClip">
+          <rect width="150" height="150" fill="white" />
+        </clipPath>
+      </defs>
     </svg>
   );
 }

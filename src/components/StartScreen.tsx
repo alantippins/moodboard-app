@@ -79,27 +79,28 @@ export function MoodCreator() {
           initial="initial"
           whileHover="hover"
           whileTap="tap"
-          animate={selectedMood === "brutalist" ? "selected" : "initial"}
+          animate={selectedMood === "stone" ? "selected" : "initial"}
         >
           <Button
             variant="outline"
-            className={`rounded-lg px-4 py-2 text-sm font-medium flex items-center gap-1 transition-colors duration-300 cursor-pointer shadow-none outline-none ring-0 focus:ring-0 focus-visible:ring-0 border-2 ${
-              selectedMood === "brutalist"
-                ? "bg-[#F2E9E4] border-[#535862]"
-                : "bg-[#F2E9E4] border-transparent text-[#717680] hover:bg-[#f7f7f7] hover:border-transparent"
-            }`}
-            onClick={() => handleMoodSelect("brutalist")}
+            className="rounded-lg px-4 py-2 text-sm font-medium flex items-center gap-1 transition-colors duration-300 cursor-pointer shadow-none outline-none ring-0 focus:ring-0 focus-visible:ring-0 border-2"
+            style={{
+              background: selectedMood === "stone" ? palettes["stone"].background : palettes["stone"].background,
+              borderColor: selectedMood === "stone" ? palettes["stone"].accent : "transparent",
+              color: selectedMood === "stone" ? palettes["stone"].headingColor : palettes["stone"].textColor
+            }}
+            onClick={() => handleMoodSelect("stone")}
           >
             <motion.span
               className="flex items-center"
-              style={{ width: 24, height: 24 }}
+              style={{ width: 20, height: 20 }}
               whileHover={{ scale: 1.15, rotate: -8 }}
               whileTap={{ scale: 0.95, rotate: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 18 }}
             >
-              {palettes["brutalist"].svg({ width: 24, height: 24 })}
+              {palettes["stone"].svg({ width: 20, height: 20 })}
             </motion.span>
-            Brutalist
+            Stone
           </Button>
         </motion.div>
 
@@ -112,11 +113,12 @@ export function MoodCreator() {
         >
           <Button
             variant="outline"
-            className={`rounded-lg px-4 py-2 text-sm font-medium flex items-center gap-1 transition-colors duration-300 cursor-pointer shadow-none outline-none ring-0 focus:ring-0 focus-visible:ring-0 border-2 ${
-              selectedMood === "celestial"
-                ? "bg-[#eef4fd] border-[#5f5086] text-[#5f5086]"
-                : "bg-[#eef4fd] border-transparent text-[#5f5086] hover:bg-[#eef4fd]/70 hover:border-transparent"
-            }`}
+            className="rounded-lg px-4 py-2 text-sm font-medium flex items-center gap-1 transition-colors duration-300 cursor-pointer shadow-none outline-none ring-0 focus:ring-0 focus-visible:ring-0 border-2"
+            style={{
+              background: selectedMood === "celestial" ? palettes["celestial"].background : palettes["celestial"].background,
+              borderColor: selectedMood === "celestial" ? palettes["celestial"].accent : "transparent",
+              color: selectedMood === "celestial" ? palettes["celestial"].headingColor : palettes["celestial"].textColor
+            }}
             onClick={() => handleMoodSelect("celestial")}
           >
             <motion.span
@@ -134,12 +136,12 @@ export function MoodCreator() {
             </motion.span>
             <motion.span
               className="flex items-center"
-              style={{ width: 24, height: 24 }}
+              style={{ width: 20, height: 20 }}
               whileHover={{ scale: 1.15, rotate: 8 }}
               whileTap={{ scale: 0.95, rotate: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 18 }}
             >
-              {palettes["celestial"].svg({ width: 24, height: 24 })}
+              {palettes["celestial"].svg({ width: 20, height: 20 })}
             </motion.span>
             Celestial
           </Button>
@@ -154,11 +156,12 @@ export function MoodCreator() {
         >
           <Button
             variant="outline"
-            className={`rounded-lg px-4 py-2 text-sm font-medium flex items-center gap-1 transition-colors duration-300 cursor-pointer shadow-none outline-none ring-0 focus:ring-0 focus-visible:ring-0 border-2 ${
-              selectedMood === "dusty-peach"
-                ? "bg-[#ffeee6] border-[#d8a48f] text-[#8d543d]"
-                : "bg-[#ffeee6] border-transparent text-[#8d543d] hover:bg-[#ffeee6]/70 hover:border-transparent"
-            }`}
+            className="rounded-lg px-4 py-2 text-sm font-medium flex items-center gap-1 transition-colors duration-300 cursor-pointer shadow-none outline-none ring-0 focus:ring-0 focus-visible:ring-0 border-2"
+            style={{
+              background: selectedMood === "dusty-peach" ? palettes["dusty peach"].background : palettes["dusty peach"].background,
+              borderColor: selectedMood === "dusty-peach" ? palettes["dusty peach"].accent : "transparent",
+              color: selectedMood === "dusty-peach" ? palettes["dusty peach"].headingColor : palettes["dusty peach"].textColor
+            }}
             onClick={() => handleMoodSelect("dusty-peach")}
           >
             <motion.span
@@ -176,12 +179,12 @@ export function MoodCreator() {
             </motion.span>
             <motion.span
               className="flex items-center"
-              style={{ width: 24, height: 24 }}
+              style={{ width: 20, height: 20 }}
               whileHover={{ scale: 1.15, rotate: 8 }}
               whileTap={{ scale: 0.95, rotate: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 18 }}
             >
-              {palettes["dusty peach"].svg({ width: 24, height: 24 })}
+              {palettes["dusty peach"].svg({ width: 20, height: 20 })}
             </motion.span>
             Dusty Peach
           </Button>

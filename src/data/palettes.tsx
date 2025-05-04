@@ -1,4 +1,4 @@
-import { DustyPeachIcon, BrutalistIcon, CelestialIcon } from "./svgIcons";
+import { DustyPeachIcon, StoneIcon, CelestialIcon } from "./svgIcons";
 
 export type Palette = {
   name: string;
@@ -35,43 +35,42 @@ export const palettes: Record<string, Palette> = {
       />
     ),
   },
-  "brutalist": {
-    name: "Brutalist",
-    background: "#f0ebd8",
-    backgroundAlt: "#1d2d44",
-    accent: "#748cab",
-    headingColor: "#3e5c76",
-    textColor: "#1d2d44",
-    swatches: ["#f0ebd8", "#748cab", "#3e5c76", "#1d2d44"],
-    fontPrimary: "IBM Plex Mono",
-    fontSecondary: "Arial",
-    audio: "industrial.mp3",
+  "stone": {
+    name: "Stone",
+    background: "#F2F2F2",           // Soft concrete
+    backgroundAlt: "#1A1A1A",        // Pure black
+    accent: "#3A3A3A",               // Industrial metal
+    headingColor: "#1A1A1A",         // Strong contrast
+    textColor: "#3A3A3A",            // Matches accent
+    swatches: ["#F2F2F2", "#B0B0B0", "#3A3A3A", "#1A1A1A"],
+    fontPrimary: "Space Grotesk",    // Modern grotesque
+    fontSecondary: "Courier Prime",  // Monospaced edge
+    audio: "rainy-lofi-city-music.mp3",
     svg: (props) => (
-      <BrutalistIcon
-        color1="#f0ebd8"
-        color2="#f0ebd8"
-        color3="#3e5c76"
+      <StoneIcon
+        color1="#F2F2F2"
+        color2="#3A3A3A"
+        color3="#1A1A1A"
         {...props}
       />
     ),
   },
   "celestial": {
     name: "Celestial",
-    background: "#d7c7ff",
-    backgroundAlt: "#5f5086",
-    accent: "#5f5086",
-    headingColor: "#717680",
-    textColor: "#5f5086",
-    swatches: ["#d7c7ff", "#5f5086", "#eef4fd", "#717680"],
-    fontPrimary: "Cormorant Garamond",
-    fontSecondary: "Montserrat",
+    background: "#e3D3De",           
+    backgroundAlt: "#383A69",        
+    accent: "#8A7692",               
+    headingColor: "#1C1E3F",        
+    textColor: "#383A69",            
+    swatches: ["#E3D3DE", "#8A7692","#383A69", "#1C1E3F" ],
+    fontPrimary: "Cormorant Garamond",  // Elegant, poetic
+    fontSecondary: "Montserrat",        // Clean, grounded
     audio: "ambient-space.mp3",
     svg: (props) => (
       <CelestialIcon
-        color1="#eef4fd"
-        color2="#d7c7ff"
-        color3="#5f5086"
-        color4="#717680"
+        color1="#E3D3DE"
+        color2="#8A7692"
+        color3="#383A69"
         {...props}
       />
     ),

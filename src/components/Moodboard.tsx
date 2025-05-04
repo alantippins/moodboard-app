@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowLeft, Play, Shuffle, Share, Upload } from "lucide-react"
+import { ArrowLeft, Play, Shuffle, Upload } from "lucide-react"
 import { useEffect, useState, useRef } from "react"
 import { motion } from "framer-motion"
 import { Howl } from "howler"
@@ -109,7 +109,7 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
       </header>
 
       {/* Title with animation */}
-      <h1 className="text-7xl font-serif text-[#4e2e20] mb-10 tracking-tight">
+      <h1 className="text-7xl text-black mb-10 tracking-tight">
         {palette.name}
       </h1>
 

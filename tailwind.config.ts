@@ -21,6 +21,9 @@ const config: Config = {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['var(--font-outfit)', 'Outfit', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -114,7 +117,7 @@ const config: Config = {
   plugins: [
     animatePlugin,
     plugin((api) => {
-      const { addUtilities, e } = api as any;
+      const { addUtilities, e } = api as unknown;
       const animationDelayUtilities: Record<string, { "animation-delay": string }> = {};
       for (let i = 1; i <= 10; i++) {
         animationDelayUtilities[`.${e(`animation-delay-${i * 100}`)}`] = {
