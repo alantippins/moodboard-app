@@ -74,12 +74,13 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
   return (
     <div className="min-h-screen bg-white p-6 md:p-12 max-w-5xl mx-auto font-sans">
       {/* Header with subtle animation */}
-      <header className="flex justify-between items-center mb-8">
+      <header className="flex md:flex-row md:justify-between md:items-center mb-8 items-center">
+        <div className="flex items-center md:items-center md:flex-row mb-4 md:mb-0 mr-6">
         {onBack ? (
           <button
             type="button"
             onClick={onBack}
-            className="flex items-center text-[#4e2e20] hover:opacity-80 transition-all duration-300 group bg-transparent border-0 p-0 m-0 cursor-pointer"
+            className="flex items-center text-[#4e2e20] hover:opacity-80 transition-all duration-300 group bg-transparent border-0 m-0 cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4 mr-2 group-hover:translate-x-[-4px] transition-transform duration-300" />
             <span className="text-sm tracking-wide">Try a new word</span>
@@ -90,15 +91,16 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
             <span className="text-sm tracking-wide">Try a new word</span>
           </Link>
         )}
+        </div>
         <div className="flex items-center gap-6">
           <button className="flex items-center text-[#4e2e20] hover:opacity-80 transition-all duration-300 group">
             <Shuffle className="h-4 w-4 mr-2 group-hover:rotate-12 transition-transform duration-300" />
             <span className="text-sm tracking-wide">Shuffle</span>
           </button>
-          <button className="flex items-center text-[#4e2e20] hover:opacity-80 transition-all duration-300 group">
+          {/* <button className="flex items-center text-[#4e2e20] hover:opacity-80 transition-all duration-300 group">
             <Share className="h-4 w-4 mr-2 group-hover:translate-y-[-2px] transition-transform duration-300" />
             <span className="text-sm tracking-wide">Share</span>
-          </button>
+          </button> */}
           <button className="flex items-center text-[#4e2e20] hover:opacity-80 transition-all duration-300 group">
             <Upload className="h-4 w-4 mr-2 group-hover:translate-y-[-2px] transition-transform duration-300" />
             <span className="text-sm tracking-wide">Export</span>
@@ -114,7 +116,7 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
       {/* Grid Layout matching the mockup */}
       <div className="grid grid-cols-12 gap-4">
         {/* Font Card 1 */}
-        <div className="col-span-3 rounded-lg" style={{ background: palette.background }}>
+        <div className="md:col-span-3 col-span-6 rounded-lg" style={{ background: palette.background }}>
           <div className="p-6 flex flex-col  transition-all duration-500 group">
             <span className="text-sm mb-4 font-serif" style={{ color: palette.headingColor }}>{palette.fontPrimary}</span>
             <span className="text-8xl font-serif mt-auto group-hover:scale-105 transition-transform origin-bottom-left duration-700" style={{ color: palette.headingColor }}>
@@ -124,7 +126,7 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
         </div>
 
         {/* Font Card 2 */}
-        <div className="col-span-3 rounded-lg" style={{ background: palette.textColor }}>
+        <div className="md:col-span-3 col-span-6 rounded-lg" style={{ background: palette.textColor }}>
           <div className="p-6 flex flex-col  transition-all duration-500 group">
             <span className="text-sm mb-4" style={{ color: palette.background }}>{palette.fontSecondary}</span>
             <span className="text-8xl font-sans mt-auto group-hover:scale-105 transition-transform origin-bottom-left duration-700" style={{ color: palette.background }}>
@@ -134,7 +136,7 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
         </div>
 
         {/* Shape Card */}
-        <div className="col-span-6 row-span-2 rounded-lg" style={{ background: palette.background }}>
+        <div className="md:col-span-6 col-span-12 row-span-2 rounded-lg" style={{ background: palette.background }}>
           <div className="flex items-center justify-center h-full w-full min-h-[350px] transition-all duration-500">
             <span className="inline-block">
   <motion.div
@@ -152,7 +154,7 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
         </div>
 
         {/* Description Card */}
-        <div className="col-span-6 rounded-lg" style={{ background: palette.background }}>
+        <div className="md:col-span-6 col-span-12 rounded-lg" style={{ background: palette.background }}>
           <div className="p-6  transition-all duration-500">
             <h2 className="text-3xl font-serif mb-3 tracking-tight" style={{ color: palette.headingColor }}>
               Soft tones, quiet intent, a balance of form and feeling.
@@ -165,7 +167,7 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
         </div>
 
         {/* Audio Card */}
-        <div className="col-span-6 rounded-lg" style={{ background: palette.accent }}>
+        <div className="md:col-span-6 col-span-12 rounded-lg" style={{ background: palette.accent }}>
            <div className="p-6 flex flex-col items-center justify-center h-full w-full transition-all duration-500 group">
              <div className="flex flex-col items-center justify-center w-full h-full" style={{ minHeight: 220 }}>
                 <div className="flex flex-col items-center justify-center" style={{ height: 120 }}>
@@ -225,7 +227,7 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
           </div>
 
         {/* Color Swatches */}
-        <div className="col-span-6 grid grid-cols-2 gap-4">
+        <div className="md:col-span-6 col-span-12 grid grid-cols-2 gap-4">
           {palette.swatches.map((color: string, i: number) => (
             <div
               key={color}
