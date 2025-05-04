@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { ArrowLeft, Play, Shuffle, Share, Upload } from "lucide-react"
 import { useEffect, useState } from "react"
+import { motion } from "framer-motion"
 
 import { palettes } from "@/data/palettes"
 
@@ -110,8 +111,8 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
       {/* Grid Layout matching the mockup */}
       <div className="grid grid-cols-12 gap-4">
         {/* Font Card 1 */}
-        <div className="col-span-4" style={{ background: palette.colors[0] }}>
-          <div className="rounded-lg p-6 flex flex-col hover:shadow-subtle transition-all duration-500 group">
+        <div className="col-span-3 rounded-lg" style={{ background: palette.colors[0] }}>
+          <div className="p-6 flex flex-col  transition-all duration-500 group">
             <span className="text-sm mb-4 font-serif" style={{ color: palette.colors[3] }}>{palette.fontPrimary}</span>
             <span className="text-8xl font-serif mt-auto group-hover:scale-105 transition-transform origin-bottom-left duration-700" style={{ color: palette.colors[3] }}>
               Aa
@@ -120,8 +121,8 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
         </div>
 
         {/* Font Card 2 */}
-        <div className="col-span-4" style={{ background: palette.colors[3] }}>
-          <div className="rounded-lg p-6 flex flex-col hover:shadow-subtle transition-all duration-500 group">
+        <div className="col-span-3 rounded-lg" style={{ background: palette.colors[2] }}>
+          <div className="p-6 flex flex-col  transition-all duration-500 group">
             <span className="text-sm mb-4" style={{ color: palette.colors[0] }}>{palette.fontSecondary}</span>
             <span className="text-8xl font-sans mt-auto group-hover:scale-105 transition-transform origin-bottom-left duration-700" style={{ color: palette.colors[0] }}>
               Aa
@@ -130,16 +131,27 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
         </div>
 
         {/* Shape Card */}
-        <div className="col-span-4 row-span-2" style={{ background: palette.colors[0] }}>
-          <div className="rounded-lg p-6 flex items-center justify-center hover:shadow-subtle transition-all duration-500">
-            {palette.svg()}
+        <div className="col-span-6 row-span-2 rounded-lg" style={{ background: palette.colors[0] }}>
+          <div className="flex items-center justify-center h-full w-full min-h-[350px] transition-all duration-500">
+            <span className="inline-block">
+  <motion.div
+    whileHover={{ scale: 1.08, rotate: 6 }}
+    whileTap={{ scale: 0.96, rotate: 0 }}
+    transition={{ type: "spring", stiffness: 250, damping: 18 }}
+    className="cursor-pointer"
+    aria-label={palette.name + " illustration"}
+    style={{ width: 240, height: 260, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+  >
+    {palette.svg({ width: 240, height: 260 })}
+  </motion.div>
+</span>
           </div>
         </div>
 
         {/* Description Card */}
-        <div className="col-span-8 rounded-lg" style={{ background: palette.colors[0] }}>
-          <div className="rounded-lg p-6 hover:shadow-subtle transition-all duration-500">
-            <h2 className="text-3xl font-serif mb-3 tracking-tight leading-relaxed" style={{ color: palette.colors[3] }}>
+        <div className="col-span-6 rounded-lg" style={{ background: palette.colors[0] }}>
+          <div className="p-6  transition-all duration-500">
+            <h2 className="text-3xl font-serif mb-3 tracking-tight" style={{ color: palette.colors[3] }}>
               Soft tones, quiet intent, a balance of form and feeling.
             </h2>
             <p className="leading-relaxed" style={{ color: palette.colors[3] }}>
@@ -150,21 +162,28 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
         </div>
 
         {/* Audio Card */}
-        <div className="col-span-8 roun" style={{ background: palette.colors[2] }}>
-          <div className="rounded-lg p-6 flex items-center justify-center hover:shadow-subtle transition-all duration-500 group">
-            <button className="flex flex-col items-center transition-all duration-300 hover:scale-110" style={{ color: palette.colors[3] }}>
+        <div className="col-span-6 rounded-lg" style={{ background: palette.colors[1] }}>
+          <div className="p-6 flex items-center justify-center  transition-all duration-500 group">
+            <motion.button
+  className="flex flex-col items-center transition-all duration-300 outline-none ring-0 focus:ring-0 focus-visible:ring-0 cursor-pointer"
+  style={{ color: palette.colors[3] }}
+  whileHover={{ scale: 1.08 }}
+  whileTap={{ scale: 0.96 }}
+  aria-label={`Play ${palette.audio.replace(/[-_]/g, ' ').replace(/\.mp3$/, '')}`}
+>
+
               <Play className="h-12 w-12 mb-2" fill={palette.colors[3]} />
               <span>{palette.audio.replace(/[-_]/g, ' ').replace(/\.mp3$/, '')}</span>
-            </button>
+            </motion.button>
           </div>
         </div>
 
         {/* Color Swatches */}
-        <div className="col-span-4 grid grid-cols-2 gap-4">
+        <div className="col-span-6 grid grid-cols-2 gap-4">
           {palette.colors.map((color, i) => (
             <div
               key={color}
-              className="rounded-lg p-4 flex items-end justify-center hover:shadow-subtle transition-all duration-500 hover:scale-105"
+              className="rounded-lg p-4 flex items-end justify-center  transition-all duration-500 hover:scale-105"
               style={{ background: color }}
             >
               <span className="text-sm" style={{ color: i === 3 ? palette.colors[0] : palette.colors[3] }}>{color.toUpperCase()}</span>
