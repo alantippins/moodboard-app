@@ -6,7 +6,7 @@ type DustyPeachIconProps = React.SVGProps<SVGSVGElement> & {
   color3?: string;
 };
 
-export function DustyPeachIcon({ color1 = "#f3ded3", color2 = "#8d543d", color3 = "#d8a48f", ...props }: DustyPeachIconProps) {
+export function DustyPeachIcon({ color2 = "#8d543d", color3 = "#d8a48f", ...props }: DustyPeachIconProps) {
   return (
     <svg width="240" height="280" viewBox="0 0 240 280" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
       <path d="M40 90 a80 80 0 0 0 160 0" fill={color2}/>

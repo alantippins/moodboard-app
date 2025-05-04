@@ -50,7 +50,6 @@ export const palettes: Record<string, Palette> = {
       <StoneIcon
         color1="#F2F2F2"
         color2="#3A3A3A"
-        color3="#1A1A1A"
         {...props}
       />
     ),

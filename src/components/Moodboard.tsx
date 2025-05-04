@@ -5,6 +5,7 @@ import { ArrowLeft, Play, Shuffle, Upload } from "lucide-react"
 import { useEffect, useState, useRef } from "react"
 import { motion } from "framer-motion"
 import { Howl } from "howler"
+import html2canvas from "html2canvas"
 
 import { palettes } from "@/data/palettes"
 
@@ -17,6 +18,18 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
   const soundRef = useRef<Howl | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [mounted, setMounted] = useState(false)
+  const exportRef = useRef<HTMLDivElement | null>(null);
+
+  const handleExport = async () => {
+    if (exportRef.current) {
+      const canvas = await html2canvas(exportRef.current, { backgroundColor: null });
+      const dataUrl = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.href = dataUrl;
+      link.download = `moodboard-${mood}.png`;
+      link.click();
+    }
+  };
 
   useEffect(() => {
     setMounted(true)
@@ -74,6 +87,8 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
   return (
     <div className="min-h-screen bg-white p-6 md:p-12 max-w-5xl mx-auto font-sans">
       {/* Header with subtle animation */}
+      <div ref={exportRef}>
+
       <header className="flex md:flex-row md:justify-between md:items-center mb-8 items-center">
         <div className="flex items-center md:items-center md:flex-row mb-4 md:mb-0 mr-6">
         {onBack ? (
@@ -101,7 +116,7 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
             <Share className="h-4 w-4 mr-2 group-hover:translate-y-[-2px] transition-transform duration-300" />
             <span className="text-sm tracking-wide">Share</span>
           </button> */}
-          <button className="flex items-center text-[#4e2e20] hover:opacity-80 transition-all duration-300 group">
+          <button className="flex items-center text-[#4e2e20] hover:opacity-80 transition-all duration-300 group" onClick={handleExport}>
             <Upload className="h-4 w-4 mr-2 group-hover:translate-y-[-2px] transition-transform duration-300" />
             <span className="text-sm tracking-wide">Export</span>
           </button>
@@ -241,6 +256,7 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
         </div>
       </div>
 
+      </div>
       <footer className="mt-12 text-right">
         {/* Footer with animation */}
         <p className="text-sm text-[#4e2e20]">
