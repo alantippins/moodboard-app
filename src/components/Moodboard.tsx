@@ -111,27 +111,27 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
       {/* Grid Layout matching the mockup */}
       <div className="grid grid-cols-12 gap-4">
         {/* Font Card 1 */}
-        <div className="col-span-3 rounded-lg" style={{ background: palette.colors[0] }}>
+        <div className="col-span-3 rounded-lg" style={{ background: palette.background }}>
           <div className="p-6 flex flex-col  transition-all duration-500 group">
-            <span className="text-sm mb-4 font-serif" style={{ color: palette.colors[3] }}>{palette.fontPrimary}</span>
-            <span className="text-8xl font-serif mt-auto group-hover:scale-105 transition-transform origin-bottom-left duration-700" style={{ color: palette.colors[3] }}>
+            <span className="text-sm mb-4 font-serif" style={{ color: palette.headingColor }}>{palette.fontPrimary}</span>
+            <span className="text-8xl font-serif mt-auto group-hover:scale-105 transition-transform origin-bottom-left duration-700" style={{ color: palette.headingColor }}>
               Aa
             </span>
           </div>
         </div>
 
         {/* Font Card 2 */}
-        <div className="col-span-3 rounded-lg" style={{ background: palette.colors[2] }}>
+        <div className="col-span-3 rounded-lg" style={{ background: palette.textColor }}>
           <div className="p-6 flex flex-col  transition-all duration-500 group">
-            <span className="text-sm mb-4" style={{ color: palette.colors[0] }}>{palette.fontSecondary}</span>
-            <span className="text-8xl font-sans mt-auto group-hover:scale-105 transition-transform origin-bottom-left duration-700" style={{ color: palette.colors[0] }}>
+            <span className="text-sm mb-4" style={{ color: palette.background }}>{palette.fontSecondary}</span>
+            <span className="text-8xl font-sans mt-auto group-hover:scale-105 transition-transform origin-bottom-left duration-700" style={{ color: palette.background }}>
               Aa
             </span>
           </div>
         </div>
 
         {/* Shape Card */}
-        <div className="col-span-6 row-span-2 rounded-lg" style={{ background: palette.colors[0] }}>
+        <div className="col-span-6 row-span-2 rounded-lg" style={{ background: palette.background }}>
           <div className="flex items-center justify-center h-full w-full min-h-[350px] transition-all duration-500">
             <span className="inline-block">
   <motion.div
@@ -149,12 +149,12 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
         </div>
 
         {/* Description Card */}
-        <div className="col-span-6 rounded-lg" style={{ background: palette.colors[0] }}>
+        <div className="col-span-6 rounded-lg" style={{ background: palette.background }}>
           <div className="p-6  transition-all duration-500">
-            <h2 className="text-3xl font-serif mb-3 tracking-tight" style={{ color: palette.colors[3] }}>
+            <h2 className="text-3xl font-serif mb-3 tracking-tight" style={{ color: palette.headingColor }}>
               Soft tones, quiet intent, a balance of form and feeling.
             </h2>
-            <p className="leading-relaxed" style={{ color: palette.colors[3] }}>
+            <p className="leading-relaxed" style={{ color: palette.headingColor }}>
               {palette.name} evokes calm restraint. It&apos;s not trying to be loud or sharp. Instead, it sits comfortably between
               eras. Modern in shape, nostalgic in warmth. The kind of palette that breathes.
             </p>
@@ -162,17 +162,17 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
         </div>
 
         {/* Audio Card */}
-        <div className="col-span-6 rounded-lg" style={{ background: palette.colors[1] }}>
+        <div className="col-span-6 rounded-lg" style={{ background: palette.accent }}>
           <div className="p-6 flex items-center justify-center  transition-all duration-500 group">
             <motion.button
   className="flex flex-col items-center transition-all duration-300 outline-none ring-0 focus:ring-0 focus-visible:ring-0 cursor-pointer"
-  style={{ color: palette.colors[3] }}
+  style={{ color: palette.headingColor }}
   whileHover={{ scale: 1.08 }}
   whileTap={{ scale: 0.96 }}
   aria-label={`Play ${palette.audio.replace(/[-_]/g, ' ').replace(/\.mp3$/, '')}`}
 >
 
-              <Play className="h-12 w-12 mb-2" fill={palette.colors[3]} />
+              <Play className="h-12 w-12 mb-2" fill={palette.headingColor} />
               <span>{palette.audio.replace(/[-_]/g, ' ').replace(/\.mp3$/, '')}</span>
             </motion.button>
           </div>
@@ -180,13 +180,14 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
 
         {/* Color Swatches */}
         <div className="col-span-6 grid grid-cols-2 gap-4">
-          {palette.colors.map((color, i) => (
+          {palette.swatches.map((color: string, i: number) => (
             <div
               key={color}
-              className="rounded-lg p-4 flex items-end justify-center  transition-all duration-500 hover:scale-105"
-              style={{ background: color }}
+              className="rounded-lg h-20 flex items-center justify-center text-lg font-mono border border-transparent transition-all duration-300 select-text cursor-pointer"
+              style={{ background: color, color: i === 0 ? palette.headingColor : palette.background }}
+              aria-label={color}
             >
-              <span className="text-sm" style={{ color: i === 3 ? palette.colors[0] : palette.colors[3] }}>{color.toUpperCase()}</span>
+              {color.toUpperCase()}
             </div>
           ))}
         </div>
