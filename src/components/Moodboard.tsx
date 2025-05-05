@@ -6,6 +6,7 @@ import { useEffect, useState, useRef } from "react"
 import { motion } from "framer-motion"
 import { Howl } from "howler"
 import html2canvas from "html2canvas"
+import { Toast } from "@/components/ui/toast"
 
 import { palettes } from "@/data/palettes"
 
@@ -19,6 +20,9 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [mounted, setMounted] = useState(false)
   const exportRef = useRef<HTMLDivElement | null>(null);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMsg, setToastMsg] = useState('');
 
   const handleExport = async () => {
     if (exportRef.current) {
@@ -85,7 +89,12 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
   }
 
   return (
-    <div className="min-h-screen bg-white p-6 md:p-12 max-w-5xl mx-auto font-sans">
+    <motion.div
+      className="min-h-screen bg-white p-6 md:p-12 max-w-5xl mx-auto font-sans"
+      initial={{ opacity: 0, scale: 0.97 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.6, ease: 'easeOut' }}
+    >
       {/* Header with subtle animation */}
       <div ref={exportRef}>
 
@@ -242,18 +251,42 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
           </div>
 
         {/* Color Swatches */}
-        <div className="md:col-span-6 col-span-12 grid grid-cols-2 gap-4">
+        <motion.div
+          className="md:col-span-6 col-span-12 grid grid-cols-2 gap-4"
+        >
           {palette.swatches.map((color: string, i: number) => (
-            <div
+            <motion.div
               key={color}
               className="rounded-lg flex items-center justify-center text-lg font-mono border border-transparent transition-all duration-300 select-text cursor-pointer"
               style={{ background: color, color: i === 0 ? palette.headingColor : palette.background }}
               aria-label={color}
+              variants={{
+                hidden: { opacity: 0, y: 16, scale: 0.96 },
+                visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.37, ease: 'easeOut' } }
+              }}
+              whileHover={{ scale: 1.045 }}
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(color.toUpperCase());
+                  setCopiedIndex(i);
+                  setShowToast(true);
+                  setToastMsg(`Copied ${color.toUpperCase()} to clipboard`);
+                  setTimeout(() => setCopiedIndex(null), 1500);
+                } catch (e) {
+                  setToastMsg('Failed to copy');
+                  setShowToast(true);
+                }
+              }}
             >
-              {color.toUpperCase()}
-            </div>
+              {copiedIndex === i ? (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9.5 17L4 11.5" /></svg>
+              ) : (
+                color.toUpperCase()
+              )}
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
+        <Toast message={toastMsg} show={showToast} onClose={() => setShowToast(false)} />
       </div>
 
       </div>
@@ -269,6 +302,6 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
           </Link>
         </p>
       </footer>
-    </div>
+    </motion.div>
   );
 }

@@ -54,14 +54,13 @@ It's a creative toy with professional applications:
   - Fonts (Google Fonts API, handpicked pairings)  
   - Sound (preloaded clips via Howler.js or HTML5 audio)  
   - Simple UI with transitions  
-- Shareable link or screenshot  
+- Export as poster/image
 
 ### Phase 2 — Delight Layer
 
 - Voice input via Web Speech API (`SpeechRecognition`)  
-- Light/dark themes  
-- Shuffle button for re-generating from same input  
-- Export as poster/image  
+<!-- - Light/dark themes   -->
+<!-- - Shuffle button for re-generating from same input   -->
 
 ### Phase 3 — Semantic Intelligence
 
@@ -118,7 +117,6 @@ sound: { label: string, file: string }
 
 shape: string
 
-tagline: string
 
 Routing:
 

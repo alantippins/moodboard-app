@@ -38,8 +38,8 @@ export const palettes: Record<string, Palette> = {
   "stone": {
     name: "Stone",
     background: "#F2F2F2",           // Soft concrete
-    backgroundAlt: "#1A1A1A",        // Pure black
-    accent: "#3A3A3A",               // Industrial metal
+    backgroundAlt: "#B0B0B0",        // Pure black
+    accent: "#B0B0B0",               // Industrial metal
     headingColor: "#1A1A1A",         // Strong contrast
     textColor: "#3A3A3A",            // Matches accent
     swatches: ["#F2F2F2", "#B0B0B0", "#3A3A3A", "#1A1A1A"],

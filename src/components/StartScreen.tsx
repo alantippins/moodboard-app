@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Mic } from "lucide-react"
+
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -44,7 +44,7 @@ export function MoodCreator() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        Say a word,
+        Type a word,
         <br />
         create a mood.
       </motion.h1>
@@ -53,8 +53,15 @@ export function MoodCreator() {
         <Input
           placeholder="Try 'dusty peach'"
           value={inputValue}
-
           onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              const normalized = inputValue.trim().toLowerCase().replace(/[-_]/g, '').replace(/\s+/g, ' ');
+              if (["stone", "celestial", "dusty peach"].includes(normalized)) {
+                setSelectedMood(normalized.replace(/\s+/g, '-'));
+              }
+            }
+          }}
           className="h-12 pl-4 pr-12 rounded-lg border-[#d5d7da] text-[#717680] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5b4fc] focus:border-[#64748b] transition-all duration-200"
           aria-label="Type a mood word"
         />
@@ -62,9 +69,16 @@ export function MoodCreator() {
           variant="ghost"
           size="icon"
           className="absolute right-2 top-1/2 -translate-y-1/2 text-[#717680] hover:text-[#535862] hover:bg-transparent cursor-pointer"
+          disabled={inputValue.trim() === ''}
+          onClick={() => {
+            const normalized = inputValue.trim().toLowerCase().replace(/[-_]/g, '').replace(/\s+/g, ' ');
+            if (["stone", "celestial", "dusty peach"].includes(normalized)) {
+              setSelectedMood(normalized.replace(/\s+/g, '-'));
+            }
+          }}
+          aria-label="Submit mood word"
         >
-          <Mic className="h-5 w-5" />
-          <span className="sr-only">Use voice input</span>
+          <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14m-7-7l7 7-7 7" /></svg>
         </Button>
       </div>
 
