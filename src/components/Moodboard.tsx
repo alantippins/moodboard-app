@@ -10,6 +10,45 @@ import { Toast } from "@/components/ui/toast"
 
 import { palettes } from "@/data/palettes"
 
+// Helper: Get luminance for a hex color
+function luminance(hex: string): number {
+  const c = hex.replace('#', '').toUpperCase();
+  const num = c.length === 3
+    ? parseInt(c[0]+c[0]+c[1]+c[1]+c[2]+c[2], 16)
+    : parseInt(c, 16);
+  const r = ((num >> 16) & 255) / 255;
+  const g = ((num >> 8) & 255) / 255;
+  const b = (num & 255) / 255;
+  const a = [r, g, b].map(v => v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4));
+  return 0.2126*a[0] + 0.7152*a[1] + 0.0722*a[2];
+}
+
+// Helper: Get swatch text color according to luminance
+function getSwatchTextColor(color: string, palette: any): string {
+  // Use headingColor for all but truly dark backgrounds
+  return luminance(color) < 0.35
+    ? palette.swatches[0]
+    : palette.headingColor;
+}
+
+import { Cormorant_Garamond, Montserrat, Playfair_Display, Inter, Space_Grotesk, Courier_Prime } from 'next/font/google';
+
+const cormorant = Cormorant_Garamond({ subsets: ['latin'], weight: ['400', '700'] });
+const montserrat = Montserrat({ subsets: ['latin'], weight: ['400', '700'] });
+const playfair = Playfair_Display({ subsets: ['latin'], weight: ['400', '700'] });
+const inter = Inter({ subsets: ['latin'], weight: ['400', '700'] });
+const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], weight: ['400', '700'] });
+const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'] });
+
+const fontMap: Record<string, { className: string }> = {
+  'Cormorant Garamond': cormorant,
+  'Montserrat': montserrat,
+  'Playfair Display': playfair,
+  'Inter': inter,
+  'Space Grotesk': spaceGrotesk,
+  'Courier Prime': courierPrime,
+};
+
 type MoodboardProps = {
   mood: string;
   onBack?: () => void;
@@ -142,20 +181,26 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
         {/* Font Card 1 */}
         <div className="md:col-span-3 col-span-6 rounded-lg" style={{ background: palette.background }}>
           <div className="p-6 flex flex-col  transition-all duration-500 group">
-            <span className="text-sm mb-4 font-serif" style={{ color: palette.headingColor }}>{palette.fontPrimary}</span>
-            <span className="text-8xl font-serif mt-auto group-hover:scale-105 transition-transform origin-bottom-left duration-700" style={{ color: palette.headingColor }}>
-              Aa
-            </span>
+            <span className="mb-4 font-serif" style={{ color: palette.headingColor, fontSize: 18 }}>{palette.fontPrimary}</span>
+            <span
+  className={`text-8xl mt-auto group-hover:scale-105 transition-transform origin-bottom-left duration-700 ${fontMap[palette.fontPrimary]?.className ?? ''}`}
+  style={{ color: palette.headingColor }}
+>
+  Aa
+</span>
           </div>
         </div>
 
         {/* Font Card 2 */}
         <div className="md:col-span-3 col-span-6 rounded-lg" style={{ background: palette.textColor }}>
           <div className="p-6 flex flex-col  transition-all duration-500 group">
-            <span className="text-sm mb-4" style={{ color: palette.background }}>{palette.fontSecondary}</span>
-            <span className="text-8xl font-sans mt-auto group-hover:scale-105 transition-transform origin-bottom-left duration-700" style={{ color: palette.background }}>
-              Aa
-            </span>
+            <span className="mb-4" style={{ color: palette.background, fontSize: 18 }}>{palette.fontSecondary}</span>
+            <span
+  className={`text-8xl mt-auto group-hover:scale-105 transition-transform origin-bottom-left duration-700 ${fontMap[palette.fontSecondary]?.className ?? ''}`}
+  style={{ color: palette.background }}
+>
+  Aa
+</span>
           </div>
         </div>
 
@@ -180,13 +225,18 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
         {/* Description Card */}
         <div className="md:col-span-6 col-span-12 rounded-lg" style={{ background: palette.background }}>
           <div className="p-6  transition-all duration-500">
-            <h2 className="text-3xl font-serif mb-3 tracking-tight" style={{ color: palette.headingColor }}>
-              Soft tones, quiet intent, a balance of form and feeling.
-            </h2>
-            <p className="leading-relaxed" style={{ color: palette.headingColor }}>
-              {palette.name} evokes calm restraint. It&apos;s not trying to be loud or sharp. Instead, it sits comfortably between
-              eras. Modern in shape, nostalgic in warmth. The kind of palette that breathes.
-            </p>
+            <h2
+  className={`text-3xl mb-3 tracking-tight ${fontMap[palette.fontPrimary]?.className ?? ''}`}
+  style={{ color: palette.headingColor, fontWeight: 600 }}
+>
+  Soft tones, quiet intent, a balance of form and feeling.
+</h2>
+            <p
+  className={`leading-relaxed ${fontMap[palette.fontSecondary]?.className ?? ''}`}
+  style={{ color: palette.headingColor }}
+>
+  {palette.name} evokes calm restraint. It&apos;s not trying to be loud or sharp. Instead, it sits comfortably between eras. Modern in shape, nostalgic in warmth. The kind of palette that breathes.
+</p>
           </div>
         </div>
 
@@ -194,7 +244,7 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
         <div className="md:col-span-6 col-span-12 rounded-lg" style={{ background: palette.accent }}>
            <div className="p-6 flex flex-col items-center justify-center h-full w-full transition-all duration-500 group">
              <div className="flex flex-col items-center justify-center w-full h-full" style={{ minHeight: 220 }}>
-                <div className="flex flex-col items-center justify-center" style={{ height: 120 }}>
+                <div className="flex flex-col items-center justify-center" style={{ height: 64 }}>
                   {!isPlaying ? (
                     <motion.button
                       className="flex flex-col items-center justify-center transition-all duration-300 outline-none ring-0 focus:ring-0 focus-visible:ring-0 cursor-pointer"
@@ -218,7 +268,7 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
                         setIsPlaying(true);
                       }}
                     >
-                      <Play className="h-16 w-16 mb-2" fill={palette.headingColor} />
+                      <Play className="h-16 w-16 mb-0" fill={palette.headingColor} />
                     </motion.button>
                   ) : (
                     <motion.button
@@ -234,18 +284,21 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
                         }
                       }}
                     >
-                      <svg className="h-16 w-16 mb-2" viewBox="0 0 24 24" fill={palette.headingColor} stroke={palette.headingColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ borderRadius: 8 }}>
+                      <svg className="h-16 w-16 mb-0" viewBox="0 0 24 24" fill={palette.headingColor} stroke={palette.headingColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ borderRadius: 8 }}>
                         <rect x="6" y="6" width="12" height="12" rx="3" />
                       </svg>
                     </motion.button>
                   )}
                 </div>
-                <div className="text-xl text-center mt-0" style={{ color: palette.headingColor, minHeight: 32, fontWeight: 400 }}>
-                  {isPlaying
-                    ? <>Now playing &quot;{palette.audio.replace(/[-_]/g, ' ').replace(/\.mp3$/, '')}&quot;</>
-                    : <>{palette.audio.replace(/[-_]/g, ' ').replace(/\.mp3$/, '')}</>
-                  }
-                </div>
+                <div
+  className={`text-center ${fontMap[palette.fontSecondary]?.className ?? ''}`}
+  style={{ color: palette.headingColor, fontSize: 18, fontWeight: 400, marginTop: 0 }}
+>
+  {isPlaying
+    ? <>Now playing &quot;{palette.audio.replace(/[-_]/g, ' ').replace(/\.mp3$/, '')}&quot;</>
+    : <>{palette.audio.replace(/[-_]/g, ' ').replace(/\.mp3$/, '')}</>
+  }
+</div>
               </div>
             </div>
           </div>
@@ -256,28 +309,33 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
         >
           {palette.swatches.map((color: string, i: number) => (
             <motion.div
-              key={color}
-              className="rounded-lg flex items-center justify-center text-lg font-mono border border-transparent transition-all duration-300 select-text cursor-pointer"
-              style={{ background: color, color: i === 0 ? palette.headingColor : palette.background }}
-              aria-label={color}
-              variants={{
-                hidden: { opacity: 0, y: 16, scale: 0.96 },
-                visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.37, ease: 'easeOut' } }
-              }}
-              whileHover={{ scale: 1.045 }}
-              onClick={async () => {
-                try {
-                  await navigator.clipboard.writeText(color.toUpperCase());
-                  setCopiedIndex(i);
-                  setShowToast(true);
-                  setToastMsg(`Copied ${color.toUpperCase()} to clipboard`);
-                  setTimeout(() => setCopiedIndex(null), 1500);
-                } catch (e) {
-                  setToastMsg('Failed to copy');
-                  setShowToast(true);
-                }
-              }}
-            >
+  key={color}
+  className={`rounded-lg flex items-start justify-start text-lg border border-transparent transition-all duration-300 select-text cursor-pointer ${fontMap[palette.fontSecondary]?.className ?? ''}`}
+  style={{
+    background: color,
+    color: getSwatchTextColor(color, palette),
+    padding: 24,
+    fontSize: 18
+  }}
+  aria-label={color}
+  variants={{
+    hidden: { opacity: 0, y: 16, scale: 0.96 },
+    visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.37, ease: 'easeOut' } }
+  }}
+  whileHover={{ scale: 1.045 }}
+  onClick={async () => {
+    try {
+      await navigator.clipboard.writeText(color.toUpperCase());
+      setCopiedIndex(i);
+      setShowToast(true);
+      setToastMsg(`Copied ${color.toUpperCase()} to clipboard`);
+      setTimeout(() => setCopiedIndex(null), 1500);
+    } catch (e) {
+      setToastMsg('Failed to copy');
+      setShowToast(true);
+    }
+  }}
+>
               {copiedIndex === i ? (
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9.5 17L4 11.5" /></svg>
               ) : (

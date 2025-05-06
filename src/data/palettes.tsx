@@ -58,17 +58,17 @@ export const palettes: Record<string, Palette> = {
     name: "Celestial",
     background: "#e3D3De",           
     backgroundAlt: "#383A69",        
-    accent: "#8A7692",               
+    accent: "#787692",               
     headingColor: "#1C1E3F",        
     textColor: "#383A69",            
-    swatches: ["#E3D3DE", "#8A7692","#383A69", "#1C1E3F" ],
+    swatches: ["#E3D3DE", "#787692","#383A69", "#1C1E3F" ],
     fontPrimary: "Cormorant Garamond",  // Elegant, poetic
     fontSecondary: "Montserrat",        // Clean, grounded
     audio: "ambient-space.mp3",
     svg: (props) => (
       <CelestialIcon
         color1="#E3D3DE"
-        color2="#8A7692"
+        color2="#787692"
         color3="#383A69"
         {...props}
       />
