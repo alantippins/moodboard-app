@@ -10,25 +10,16 @@ import { Toast } from "@/components/ui/toast"
 
 import { palettes } from "@/data/palettes"
 
-// Helper: Get luminance for a hex color
-function luminance(hex: string): number {
-  const c = hex.replace('#', '').toUpperCase();
-  const num = c.length === 3
-    ? parseInt(c[0]+c[0]+c[1]+c[1]+c[2]+c[2], 16)
-    : parseInt(c, 16);
-  const r = ((num >> 16) & 255) / 255;
-  const g = ((num >> 8) & 255) / 255;
-  const b = (num & 255) / 255;
-  const a = [r, g, b].map(v => v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4));
-  return 0.2126*a[0] + 0.7152*a[1] + 0.0722*a[2];
-}
+
 
 // Helper: Get swatch text color according to luminance
-function getSwatchTextColor(color: string, palette: any): string {
-  // Use headingColor for all but truly dark backgrounds
-  return luminance(color) < 0.35
-    ? palette.swatches[0]
-    : palette.headingColor;
+function getSwatchTextColor(color: string, palette: Palette, index: number): string {
+  if (!palette) return "#000";
+  if (index < 2) {
+    return palette.headingColor || "#000";
+  } else {
+    return palette.swatches[0] || "#FFF";
+  }
 }
 
 import { Cormorant_Garamond, Montserrat, Playfair_Display, Inter, Space_Grotesk, Courier_Prime } from 'next/font/google';
@@ -49,12 +40,14 @@ const fontMap: Record<string, { className: string }> = {
   'Courier Prime': courierPrime,
 };
 
+import { Palette } from '@/data/palettes';
 type MoodboardProps = {
-  mood: string;
+  mood?: string;
+  palette?: Palette;
   onBack?: () => void;
 }
 
-export default function Moodboard({ mood, onBack }: MoodboardProps) {
+export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
   const soundRef = useRef<Howl | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [mounted, setMounted] = useState(false)
@@ -107,7 +100,17 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
 
   if (!mounted) return null
 
-  if (!mood || typeof mood !== 'string') {
+  // Always use local palettes for presets, API palette for generated moods
+  const presetMoods = ["stone", "celestial", "dusty peach"];
+  let resolvedPalette: Palette | null = null;
+  if (mood && presetMoods.includes(mood)) {
+    resolvedPalette = palettes[mood as keyof typeof palettes];
+  } else if (palette) {
+    resolvedPalette = palette;
+  }
+
+  console.log('Mood:', mood, 'Resolved Palette:', resolvedPalette);
+  if (!resolvedPalette) {
     return (
       <div className="flex flex-col items-center justify-center h-full">
         <div className="text-2xl font-bold mb-2">No mood selected</div>
@@ -116,16 +119,6 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
     )
   }
 
-  const palette = palettes[mood.toLowerCase()]
-
-  if (!palette) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full">
-        <div className="text-2xl font-bold mb-2">Mood not found</div>
-        <div className="text-gray-500">Please select a mood to see its moodboard.</div>
-      </div>
-    )
-  }
 
   return (
     <motion.div
@@ -173,18 +166,18 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
 
       {/* Title with animation */}
       <h1 className="text-7xl text-black mb-10 tracking-tight">
-        {palette.name}
+        {resolvedPalette.name}
       </h1>
 
       {/* Grid Layout matching the mockup */}
       <div className="grid grid-cols-12 gap-4">
         {/* Font Card 1 */}
-        <div className="md:col-span-3 col-span-6 rounded-lg" style={{ background: palette.background }}>
+        <div className="md:col-span-3 col-span-6 rounded-lg" style={{ background: resolvedPalette.background }}>
           <div className="p-6 flex flex-col  transition-all duration-500 group">
-            <span className="mb-4 font-serif" style={{ color: palette.headingColor, fontSize: 18 }}>{palette.fontPrimary}</span>
+            <span className="mb-4 font-serif" style={{ color: resolvedPalette.headingColor, fontSize: 18 }}>{resolvedPalette.fontPrimary}</span>
             <span
-  className={`text-8xl mt-auto group-hover:scale-105 transition-transform origin-bottom-left duration-700 ${fontMap[palette.fontPrimary]?.className ?? ''}`}
-  style={{ color: palette.headingColor }}
+  className={`text-8xl mt-auto group-hover:scale-105 transition-transform origin-bottom-left duration-700 ${fontMap[resolvedPalette.fontPrimary]?.className ?? ''}`}
+  style={{ color: resolvedPalette.headingColor }}
 >
   Aa
 </span>
@@ -192,12 +185,12 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
         </div>
 
         {/* Font Card 2 */}
-        <div className="md:col-span-3 col-span-6 rounded-lg" style={{ background: palette.textColor }}>
+        <div className="md:col-span-3 col-span-6 rounded-lg" style={{ background: resolvedPalette.textColor }}>
           <div className="p-6 flex flex-col  transition-all duration-500 group">
-            <span className="mb-4" style={{ color: palette.background, fontSize: 18 }}>{palette.fontSecondary}</span>
+            <span className="mb-4" style={{ color: resolvedPalette.background, fontSize: 18 }}>{resolvedPalette.fontSecondary}</span>
             <span
-  className={`text-8xl mt-auto group-hover:scale-105 transition-transform origin-bottom-left duration-700 ${fontMap[palette.fontSecondary]?.className ?? ''}`}
-  style={{ color: palette.background }}
+  className={`text-8xl mt-auto group-hover:scale-105 transition-transform origin-bottom-left duration-700 ${fontMap[resolvedPalette.fontSecondary]?.className ?? ''}`}
+  style={{ color: resolvedPalette.background }}
 >
   Aa
 </span>
@@ -205,7 +198,7 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
         </div>
 
         {/* Shape Card */}
-        <div className="md:col-span-6 col-span-12 row-span-2 rounded-lg" style={{ background: palette.background }}>
+        <div className="md:col-span-6 col-span-12 row-span-2 rounded-lg" style={{ background: resolvedPalette.background }}>
           <div className="flex items-center justify-center h-full w-full min-h-[350px] transition-all duration-500">
             <span className="inline-block">
   <motion.div
@@ -213,49 +206,53 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
     whileTap={{ scale: 0.96, rotate: 0 }}
     transition={{ type: "spring", stiffness: 250, damping: 18 }}
     className="cursor-pointer"
-    aria-label={palette.name + " illustration"}
+    aria-label={resolvedPalette.name + " illustration"}
     style={{ width: 240, height: 260, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
   >
-    {palette.svg({ width: 240, height: 260 })}
+    {typeof resolvedPalette.svg === 'function'
+  ? resolvedPalette.svg({ width: 240, height: 260 })
+  : typeof resolvedPalette.svg === 'string' && resolvedPalette.svg
+    ? <img src={resolvedPalette.svg} width={240} height={260} alt={resolvedPalette.name + ' illustration'} />
+    : null}
   </motion.div>
 </span>
           </div>
         </div>
 
         {/* Description Card */}
-        <div className="md:col-span-6 col-span-12 rounded-lg" style={{ background: palette.background }}>
+        <div className="md:col-span-6 col-span-12 rounded-lg" style={{ background: resolvedPalette.background }}>
           <div className="p-6  transition-all duration-500">
             <h2
-  className={`text-3xl mb-3 tracking-tight ${fontMap[palette.fontPrimary]?.className ?? ''}`}
-  style={{ color: palette.headingColor, fontWeight: 600 }}
+  className={`text-3xl mb-3 tracking-tight ${fontMap[resolvedPalette.fontPrimary]?.className ?? ''}`}
+  style={{ color: resolvedPalette.headingColor, fontWeight: 600 }}
 >
   Soft tones, quiet intent, a balance of form and feeling.
 </h2>
             <p
-  className={`leading-relaxed ${fontMap[palette.fontSecondary]?.className ?? ''}`}
-  style={{ color: palette.headingColor }}
+  className={`leading-relaxed ${fontMap[resolvedPalette.fontSecondary]?.className ?? ''}`}
+  style={{ color: resolvedPalette.headingColor }}
 >
-  {palette.name} evokes calm restraint. It&apos;s not trying to be loud or sharp. Instead, it sits comfortably between eras. Modern in shape, nostalgic in warmth. The kind of palette that breathes.
+  {resolvedPalette.name} evokes calm restraint. It&apos;s not trying to be loud or sharp. Instead, it sits comfortably between eras. Modern in shape, nostalgic in warmth. The kind of palette that breathes.
 </p>
           </div>
         </div>
 
         {/* Audio Card */}
-        <div className="md:col-span-6 col-span-12 rounded-lg" style={{ background: palette.accent }}>
+        <div className="md:col-span-6 col-span-12 rounded-lg" style={{ background: resolvedPalette.accent }}>
            <div className="p-6 flex flex-col items-center justify-center h-full w-full transition-all duration-500 group">
              <div className="flex flex-col items-center justify-center w-full h-full" style={{ minHeight: 220 }}>
                 <div className="flex flex-col items-center justify-center" style={{ height: 64 }}>
                   {!isPlaying ? (
                     <motion.button
                       className="flex flex-col items-center justify-center transition-all duration-300 outline-none ring-0 focus:ring-0 focus-visible:ring-0 cursor-pointer"
-                      style={{ color: palette.headingColor, background: 'transparent' }}
+                      style={{ color: resolvedPalette.headingColor, background: 'transparent' }}
                       whileHover={{ scale: 1.08 }}
                       whileTap={{ scale: 0.96 }}
-                      aria-label={`Play ${palette.audio.replace(/[-_]/g, ' ').replace(/\.mp3$/, '')}`}
+                      aria-label={`Play ${resolvedPalette.audio.replace(/[-_]/g, ' ').replace(/\.mp3$/, '')}`}
                       onClick={() => {
                         if (!soundRef.current) {
                           const sound = new Howl({
-                            src: ["/audio/" + palette.audio],
+                            src: ["/audio/" + resolvedPalette.audio],
                             onend: () => setIsPlaying(false),
                             onloaderror: () => {
                               alert("Audio file could not be loaded. Please check file path.");
@@ -268,12 +265,12 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
                         setIsPlaying(true);
                       }}
                     >
-                      <Play className="h-16 w-16 mb-0" fill={palette.headingColor} />
+                      <Play className="h-16 w-16 mb-0" fill={resolvedPalette.headingColor} />
                     </motion.button>
                   ) : (
                     <motion.button
                       className="flex flex-col items-center justify-center transition-all duration-300 outline-none ring-0 focus:ring-0 focus-visible:ring-0 cursor-pointer"
-                      style={{ color: palette.headingColor, background: 'transparent' }}
+                      style={{ color: resolvedPalette.headingColor, background: 'transparent' }}
                       whileHover={{ scale: 1.08 }}
                       whileTap={{ scale: 0.96 }}
                       aria-label="Stop audio"
@@ -284,19 +281,19 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
                         }
                       }}
                     >
-                      <svg className="h-16 w-16 mb-0" viewBox="0 0 24 24" fill={palette.headingColor} stroke={palette.headingColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ borderRadius: 8 }}>
+                      <svg className="h-16 w-16 mb-0" viewBox="0 0 24 24" fill={resolvedPalette.headingColor} stroke={resolvedPalette.headingColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ borderRadius: 8 }}>
                         <rect x="6" y="6" width="12" height="12" rx="3" />
                       </svg>
                     </motion.button>
                   )}
                 </div>
                 <div
-  className={`text-center ${fontMap[palette.fontSecondary]?.className ?? ''}`}
-  style={{ color: palette.headingColor, fontSize: 18, fontWeight: 400, marginTop: 0 }}
+  className={`text-center ${fontMap[resolvedPalette.fontSecondary]?.className ?? ''}`}
+  style={{ color: resolvedPalette.headingColor, fontSize: 18, fontWeight: 400, marginTop: 0 }}
 >
   {isPlaying
-    ? <>Now playing &quot;{palette.audio.replace(/[-_]/g, ' ').replace(/\.mp3$/, '')}&quot;</>
-    : <>{palette.audio.replace(/[-_]/g, ' ').replace(/\.mp3$/, '')}</>
+    ? <>Now playing &quot;{resolvedPalette.audio.replace(/[-_]/g, ' ').replace(/\.mp3$/, '')}&quot;</>
+    : <>{resolvedPalette.audio.replace(/[-_]/g, ' ').replace(/\.mp3$/, '')}</>
   }
 </div>
               </div>
@@ -307,13 +304,13 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
         <motion.div
           className="md:col-span-6 col-span-12 grid grid-cols-2 gap-4"
         >
-          {palette.swatches.map((color: string, i: number) => (
+          {resolvedPalette.swatches.map((color: string, i: number) => (
             <motion.div
   key={color}
-  className={`rounded-lg flex items-start justify-start text-lg border border-transparent transition-all duration-300 select-text cursor-pointer ${fontMap[palette.fontSecondary]?.className ?? ''}`}
+  className={`rounded-lg flex items-start justify-start text-lg border border-transparent transition-all duration-300 select-text cursor-pointer ${fontMap[resolvedPalette.fontSecondary]?.className ?? ''}`}
   style={{
     background: color,
-    color: getSwatchTextColor(color, palette),
+    color: getSwatchTextColor(color, resolvedPalette, i),
     padding: 24,
     fontSize: 18
   }}
@@ -330,7 +327,8 @@ export default function Moodboard({ mood, onBack }: MoodboardProps) {
       setShowToast(true);
       setToastMsg(`Copied ${color.toUpperCase()} to clipboard`);
       setTimeout(() => setCopiedIndex(null), 1500);
-    } catch (e) {
+    } catch {
+
       setToastMsg('Failed to copy');
       setShowToast(true);
     }
