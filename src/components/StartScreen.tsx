@@ -80,7 +80,12 @@ export function MoodCreator() {
                   });
                   const data = await res.json();
                   if (data.palette) {
-                    setGeneratedPalette(data.palette);
+                    const palette = data.palette;
+                    if (!["stone", "celestial", "dusty peach"].includes((palette.name || "").toLowerCase())) {
+                      const { generateGeometricSVG } = await import("@/utils/generateGeometricSVG");
+                      palette.svg = (props: any) => generateGeometricSVG(palette, palette.name || inputValue);
+                    }
+                    setGeneratedPalette(palette);
                   } else {
                     setError('Could not generate moodboard.');
                   }
@@ -116,7 +121,12 @@ export function MoodCreator() {
                 });
                 const data = await res.json();
                 if (data.palette) {
-                  setGeneratedPalette(data.palette);
+                  const palette = data.palette;
+                  if (!["stone", "celestial", "dusty peach"].includes((palette.name || "").toLowerCase())) {
+                    const { generateGeometricSVG } = await import("@/utils/generateGeometricSVG");
+                    palette.svg = (props: any) => generateGeometricSVG(palette, palette.name || inputValue);
+                  }
+                  setGeneratedPalette(palette);
                 } else {
                   setError('Could not generate moodboard.');
                 }

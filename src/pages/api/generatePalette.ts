@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import type { Palette } from '@/data/palettes';
 
 if (!process.env.OPENAI_API_KEY) {
   throw new Error('OPENAI_API_KEY is required in .env file');
@@ -21,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4',
+      model: 'gpt-3.5-turbo',
       messages: [
         { role: 'system', content: 'You are a helpful assistant.' },
         { role: 'user', content: prompt },
@@ -30,9 +31,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       temperature: 0.7,
     });
     const text = completion.choices[0].message?.content?.trim() || '';
-    // Try to parse the JSON from the response
-    const palette = JSON.parse(text);
-    res.status(200).json({ palette });
+    let palette: Palette;
+    try {
+      palette = JSON.parse(text);
+    } catch {
+      return res.status(500).json({ error: "Failed to parse palette JSON." });
+    }
+
+    // Only return serializable palette JSON. SVG will be attached on frontend.
+    return res.status(200).json({ palette });
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : 'Failed to generate palette';
     res.status(500).json({ error: errorMsg });
