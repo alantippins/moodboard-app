@@ -12,15 +12,25 @@ import { palettes } from "@/data/palettes"
 
 
 
-// Helper: Get swatch text color according to luminance
-function getSwatchTextColor(color: string, palette: Palette, index: number): string {
-  if (!palette) return "#000";
-  if (index < 2) {
-    return palette.headingColor || "#000";
+// Helper: For a given background and swatch array, returns the darkest swatch if bg is light (L>0.5), or the lightest swatch if bg is dark.
+function getSwatchLabelColor(bg: string, swatches: string[]): string {
+  if (!swatches || swatches.length === 0) return '#000';
+  // Sort by OKLCH lightness
+  const byLightness = [...swatches].sort((a, b) => {
+    const lA = hexToOklch(a)?.l ?? 0;
+    const lB = hexToOklch(b)?.l ?? 0;
+    return lA - lB;
+  });
+  const lBg = hexToOklch(bg)?.l ?? 0;
+  if (lBg > 0.5) {
+    // Light bg, use darkest swatch
+    return byLightness[0];
   } else {
-    return palette.swatches[0] || "#FFF";
+    // Dark bg, use lightest swatch
+    return byLightness[byLightness.length - 1];
   }
 }
+
 
 import { Cormorant_Garamond, Montserrat, Playfair_Display, Inter, Space_Grotesk, Courier_Prime } from 'next/font/google';
 
@@ -45,6 +55,44 @@ type MoodboardProps = {
   mood?: string;
   palette?: Palette;
   onBack?: () => void;
+}
+
+import { converter } from 'culori';
+
+// Create a converter for hex to oklch
+const hexToOklch = converter('oklch');
+
+// Get delta L (lightness) between two colors in OKLCH
+function deltaL(hex1: string, hex2: string) {
+  const c1 = hexToOklch(hex1);
+  const c2 = hexToOklch(hex2);
+  if (!c1 || !c2) return 0;
+  return Math.abs(c1.l - c2.l);
+}
+
+// Return the palette swatch with the best accessible contrast; fallback to black/white if needed
+function getContrastSwatch(bg: string, swatches: string[]) {
+  let best = swatches[0];
+  let bestDelta = -1;
+  for (const s of swatches) {
+    if (s === bg) continue;
+    const dL = deltaL(bg, s);
+    if (dL > bestDelta) {
+      bestDelta = dL;
+      best = s;
+    }
+  }
+  return best;
+}
+
+
+// Utility: Sort swatches by OKLCH lightness (L), lightest first
+function spreadSwatchesByLightness(swatches: string[]): string[] {
+  return [...swatches].sort((a, b) => {
+    const lA = hexToOklch(a)?.l ?? 0;
+    const lB = hexToOklch(b)?.l ?? 0;
+    return lA - lB; // ascending: lightest first
+  });
 }
 
 export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
@@ -109,6 +157,8 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
     resolvedPalette = palette;
   }
 
+  const sortedSwatches = spreadSwatchesByLightness(resolvedPalette?.swatches || []);
+
   console.log('Mood:', mood, 'Resolved Palette:', resolvedPalette);
   if (!resolvedPalette) {
     return (
@@ -169,15 +219,18 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
         {resolvedPalette.name}
       </h1>
 
+      {/* Helper to pick most contrasting swatch for text */}
+
+
       {/* Grid Layout matching the mockup */}
       <div className="grid grid-cols-12 gap-4">
         {/* Font Card 1 */}
-        <div className="md:col-span-3 col-span-6 rounded-lg" style={{ background: resolvedPalette.background }}>
+        <div className="md:col-span-3 col-span-6 rounded-lg" style={{ background: sortedSwatches[0] }}>
           <div className="p-6 flex flex-col  transition-all duration-500 group">
-            <span className="mb-4 font-serif" style={{ color: resolvedPalette.headingColor, fontSize: 18 }}>{resolvedPalette.fontPrimary}</span>
+            <span className="mb-4 font-serif" style={{ color: getContrastSwatch(sortedSwatches[0], sortedSwatches), fontSize: 18 }}>{resolvedPalette.fontPrimary}</span>
             <span
   className={`text-8xl mt-auto group-hover:scale-105 transition-transform origin-bottom-left duration-700 ${fontMap[resolvedPalette.fontPrimary]?.className ?? ''}`}
-  style={{ color: resolvedPalette.headingColor }}
+  style={{ color: getContrastSwatch(sortedSwatches[0], sortedSwatches) }}
 >
   Aa
 </span>
@@ -185,12 +238,12 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
         </div>
 
         {/* Font Card 2 */}
-        <div className="md:col-span-3 col-span-6 rounded-lg" style={{ background: resolvedPalette.textColor }}>
+        <div className="md:col-span-3 col-span-6 rounded-lg" style={{ background: sortedSwatches[1] }}>
           <div className="p-6 flex flex-col  transition-all duration-500 group">
-            <span className="mb-4" style={{ color: resolvedPalette.background, fontSize: 18 }}>{resolvedPalette.fontSecondary}</span>
+            <span className="mb-4" style={{ color: getContrastSwatch(sortedSwatches[1], sortedSwatches), fontSize: 18 }}>{resolvedPalette.fontSecondary}</span>
             <span
   className={`text-8xl mt-auto group-hover:scale-105 transition-transform origin-bottom-left duration-700 ${fontMap[resolvedPalette.fontSecondary]?.className ?? ''}`}
-  style={{ color: resolvedPalette.background }}
+  style={{ color: getContrastSwatch(sortedSwatches[1], sortedSwatches) }}
 >
   Aa
 </span>
@@ -224,13 +277,13 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
           <div className="p-6  transition-all duration-500">
             <h2
   className={`text-3xl mb-3 tracking-tight ${fontMap[resolvedPalette.fontPrimary]?.className ?? ''}`}
-  style={{ color: resolvedPalette.headingColor, fontWeight: 600 }}
+  style={{ color: getContrastSwatch(resolvedPalette.background, resolvedPalette.swatches), fontWeight: 600 }}
 >
   Soft tones, quiet intent, a balance of form and feeling.
 </h2>
             <p
   className={`leading-relaxed ${fontMap[resolvedPalette.fontSecondary]?.className ?? ''}`}
-  style={{ color: resolvedPalette.headingColor }}
+  style={{ color: getContrastSwatch(resolvedPalette.background, resolvedPalette.swatches) }}
 >
   {resolvedPalette.name} evokes calm restraint. It&apos;s not trying to be loud or sharp. Instead, it sits comfortably between eras. Modern in shape, nostalgic in warmth. The kind of palette that breathes.
 </p>
@@ -265,7 +318,7 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
                         setIsPlaying(true);
                       }}
                     >
-                      <Play className="h-16 w-16 mb-0" fill={resolvedPalette.headingColor} />
+                      <Play className="h-16 w-16 mb-0" fill={getContrastSwatch(resolvedPalette.accent, resolvedPalette.swatches)} />
                     </motion.button>
                   ) : (
                     <motion.button
@@ -281,15 +334,15 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
                         }
                       }}
                     >
-                      <svg className="h-16 w-16 mb-0" viewBox="0 0 24 24" fill={resolvedPalette.headingColor} stroke={resolvedPalette.headingColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ borderRadius: 8 }}>
-                        <rect x="6" y="6" width="12" height="12" rx="3" />
-                      </svg>
+                       <svg className="h-16 w-16 mb-0" viewBox="0 0 24 24" fill={getContrastSwatch(resolvedPalette.accent, resolvedPalette.swatches)} stroke={getContrastSwatch(resolvedPalette.accent, resolvedPalette.swatches)} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ borderRadius: 8, color: getContrastSwatch(resolvedPalette.accent, resolvedPalette.swatches) }}>
+                         <rect x="6" y="6" width="12" height="12" rx="3" />
+                       </svg>
                     </motion.button>
                   )}
                 </div>
                 <div
   className={`text-center ${fontMap[resolvedPalette.fontSecondary]?.className ?? ''}`}
-  style={{ color: resolvedPalette.headingColor, fontSize: 18, fontWeight: 400, marginTop: 0 }}
+  style={{ color: getContrastSwatch(resolvedPalette.accent, resolvedPalette.swatches), fontSize: 18, fontWeight: 400, marginTop: 0 }}
 >
   {isPlaying
     ? <>Now playing &quot;{resolvedPalette.audio.replace(/[-_]/g, ' ').replace(/\.mp3$/, '')}&quot;</>
@@ -310,7 +363,7 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
   className={`rounded-lg flex items-start justify-start text-lg border border-transparent transition-all duration-300 select-text cursor-pointer ${fontMap[resolvedPalette.fontSecondary]?.className ?? ''}`}
   style={{
     background: color,
-    color: getSwatchTextColor(color, resolvedPalette, i),
+    color: getSwatchLabelColor(color, resolvedPalette.swatches),
     padding: 24,
     fontSize: 18
   }}
