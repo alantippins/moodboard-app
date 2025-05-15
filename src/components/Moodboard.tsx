@@ -4,6 +4,7 @@ import Link from "next/link"
 import { ArrowLeft, Play, Shuffle, Upload } from "lucide-react"
 import { useEffect, useState, useRef } from "react"
 import { motion } from "framer-motion"
+import { getAudioForMood } from './mood-audio-map';
 import { Howl } from "howler"
 import html2canvas from "html2canvas"
 import { Toast } from "@/components/ui/toast"
@@ -185,7 +186,13 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
         {onBack ? (
           <button
             type="button"
-            onClick={onBack}
+            onClick={() => {
+              if (soundRef.current) {
+                soundRef.current.stop();
+                soundRef.current.unload();
+              }
+              onBack();
+            }}
             className="flex items-center text-[#4e2e20] hover:opacity-80 transition-all duration-300 group bg-transparent border-0 m-0 cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4 mr-2 group-hover:translate-x-[-4px] transition-transform duration-300" />
@@ -305,7 +312,7 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
                       onClick={() => {
                         if (!soundRef.current) {
                           const sound = new Howl({
-                            src: ["/audio/" + resolvedPalette.audio],
+                            src: ["/audio/" + getAudioForMood(mood || resolvedPalette.name || "")],
                             onend: () => setIsPlaying(false),
                             onloaderror: () => {
                               alert("Audio file could not be loaded. Please check file path.");
@@ -345,8 +352,8 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
   style={{ color: getContrastSwatch(resolvedPalette.accent, resolvedPalette.swatches), fontSize: 18, fontWeight: 400, marginTop: 0 }}
 >
   {isPlaying
-    ? <>Now playing &quot;{resolvedPalette.audio.replace(/[-_]/g, ' ').replace(/\.mp3$/, '')}&quot;</>
-    : <>{resolvedPalette.audio.replace(/[-_]/g, ' ').replace(/\.mp3$/, '')}</>
+    ? <>Now playing: {resolvedPalette.name} soundtrack</>
+    : <>{resolvedPalette.name} soundtrack</>
   }
 </div>
               </div>
