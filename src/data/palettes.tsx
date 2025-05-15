@@ -11,7 +11,7 @@ export type Palette = {
   fontPrimary: string;
   fontSecondary: string;
   audio: string;
-  svg: (props?: React.SVGProps<SVGSVGElement>) => React.ReactNode;
+  svg?: string | ((props?: React.SVGProps<SVGSVGElement>) => React.ReactNode);
 };
 
 export const palettes: Record<string, Palette> = {

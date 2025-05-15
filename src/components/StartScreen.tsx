@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-
+import { Palette } from '@/data/palettes';
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,6 +11,10 @@ import { palettes } from "@/data/palettes"
 export function MoodCreator() {
   const [inputValue, setInputValue] = useState("");
   const [selectedMood, setSelectedMood] = useState<string | null>(null)
+  const [generatedPalette, setGeneratedPalette] = useState<Palette | null>(null);
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Animation variants
   const buttonVariants = {
@@ -28,6 +32,12 @@ export function MoodCreator() {
 
   const handleMoodSelect = (mood: string) => {
     setSelectedMood(mood === selectedMood ? null : mood)
+  }
+
+  
+
+  if (generatedPalette) {
+    return <Moodboard palette={generatedPalette} onBack={() => { setGeneratedPalette(null); setInputValue(""); }} />;
   }
 
   if (selectedMood) {
@@ -54,11 +64,37 @@ export function MoodCreator() {
           placeholder="Try 'dusty peach'"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          onKeyDown={(e) => {
+          onKeyDown={async (e) => {
             if (e.key === 'Enter') {
               const normalized = inputValue.trim().toLowerCase().replace(/[-_]/g, '').replace(/\s+/g, ' ');
               if (["stone", "celestial", "dusty peach"].includes(normalized)) {
                 setSelectedMood(normalized.replace(/\s+/g, '-'));
+              } else if (normalized) {
+                setLoading(true);
+                setError(null);
+                try {
+                  const res = await fetch('/api/generatePalette', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ word: normalized }),
+                  });
+                  const data = await res.json();
+                  if (data.palette) {
+                    const palette = data.palette;
+                    if (!["stone", "celestial", "dusty peach"].includes((palette.name || "").toLowerCase())) {
+                      const { generateGeometricSVG } = await import("@/utils/generateGeometricSVG");
+                      palette.svg = (props: any) => generateGeometricSVG(palette, palette.name || inputValue);
+                    }
+                    setGeneratedPalette(palette);
+                  } else {
+                    setError('Could not generate moodboard.');
+                  }
+                } catch {
+
+                  setError('Failed to contact OpenAI API.');
+                } finally {
+                  setLoading(false);
+                }
               }
             }
           }}
@@ -69,11 +105,37 @@ export function MoodCreator() {
           variant="ghost"
           size="icon"
           className="absolute right-2 top-1/2 -translate-y-1/2 text-[#717680] hover:text-[#535862] hover:bg-transparent cursor-pointer"
-          disabled={inputValue.trim() === ''}
-          onClick={() => {
+          disabled={inputValue.trim() === '' || loading}
+          onClick={async () => {
             const normalized = inputValue.trim().toLowerCase().replace(/[-_]/g, '').replace(/\s+/g, ' ');
             if (["stone", "celestial", "dusty peach"].includes(normalized)) {
-              setSelectedMood(normalized.replace(/\s+/g, '-'));
+              setSelectedMood(normalized);
+            } else if (normalized) {
+              setLoading(true);
+              setError(null);
+              try {
+                const res = await fetch('/api/generatePalette', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ word: normalized }),
+                });
+                const data = await res.json();
+                if (data.palette) {
+                  const palette = data.palette;
+                  if (!["stone", "celestial", "dusty peach"].includes((palette.name || "").toLowerCase())) {
+                    const { generateGeometricSVG } = await import("@/utils/generateGeometricSVG");
+                    palette.svg = (props: any) => generateGeometricSVG(palette, palette.name || inputValue);
+                  }
+                  setGeneratedPalette(palette);
+                } else {
+                  setError('Could not generate moodboard.');
+                }
+              } catch {
+
+                setError('Failed to contact OpenAI API.');
+              } finally {
+                setLoading(false);
+              }
             }
           }}
           aria-label="Submit mood word"
@@ -112,7 +174,11 @@ export function MoodCreator() {
               whileTap={{ scale: 0.95, rotate: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 18 }}
             >
-              {palettes["stone"].svg({ width: 20, height: 20 })}
+              {typeof palettes["stone"].svg === 'function'
+  ? palettes["stone"].svg({ width: 20, height: 20 })
+  : typeof palettes["stone"].svg === 'string' && palettes["stone"].svg
+    ? <img src={palettes["stone"].svg} width={20} height={20} alt="Stone illustration" />
+    : null}
             </motion.span>
             Stone
           </Button>
@@ -155,7 +221,11 @@ export function MoodCreator() {
               whileTap={{ scale: 0.95, rotate: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 18 }}
             >
-              {palettes["celestial"].svg({ width: 20, height: 20 })}
+              {typeof palettes["celestial"].svg === 'function'
+  ? palettes["celestial"].svg({ width: 20, height: 20 })
+  : typeof palettes["celestial"].svg === 'string' && palettes["celestial"].svg
+    ? <img src={palettes["celestial"].svg} width={20} height={20} alt="Celestial illustration" />
+    : null}
             </motion.span>
             Celestial
           </Button>
@@ -198,7 +268,11 @@ export function MoodCreator() {
               whileTap={{ scale: 0.95, rotate: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 18 }}
             >
-              {palettes["dusty peach"].svg({ width: 20, height: 20 })}
+              {typeof palettes["dusty peach"].svg === 'function'
+  ? palettes["dusty peach"].svg({ width: 20, height: 20 })
+  : typeof palettes["dusty peach"].svg === 'string' && palettes["dusty peach"].svg
+    ? <img src={palettes["dusty peach"].svg} width={20} height={20} alt="Dusty Peach illustration" />
+    : null}
             </motion.span>
             Dusty Peach
           </Button>
@@ -217,6 +291,12 @@ export function MoodCreator() {
             Selected mood: <span className="font-medium">{selectedMood}</span>
           </p>
         </motion.div>
+      )}
+      {loading && (
+        <div className="mt-4 text-[#717680] text-sm">Generating moodboard...</div>
+      )}
+      {error && (
+        <div className="mt-4 text-red-500 text-sm">{error}</div>
       )}
     </div>
   )
