@@ -158,7 +158,8 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
     resolvedPalette = palette;
   }
 
-  const sortedSwatches = spreadSwatchesByLightness(resolvedPalette?.swatches || []);
+  // Reverse so that 0 is lightest, 3 is darkest
+  const sortedSwatches = spreadSwatchesByLightness(resolvedPalette?.swatches || []).reverse();
 
   console.log('Mood:', mood, 'Resolved Palette:', resolvedPalette);
   if (!resolvedPalette) {
@@ -199,14 +200,14 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
             <span className="text-sm tracking-wide">Try a new word</span>
           </button>
         ) : (
-          <Link href="#" className="flex items-center text-[#4e2e20] hover:opacity-80 transition-all duration-300 group">
+          <Link href="#" className="flex items-center text-[#222] hover:opacity-80 transition-all duration-300 group">
             <ArrowLeft className="h-4 w-4 mr-2 group-hover:translate-x-[-4px] transition-transform duration-300" />
             <span className="text-sm tracking-wide">Try a new word</span>
           </Link>
         )}
         </div>
         <div className="flex items-center gap-6">
-          <button className="flex items-center text-[#4e2e20] hover:opacity-80 transition-all duration-300 group">
+          <button className="flex items-center text-[#222] hover:opacity-80 transition-all duration-300 group">
             <Shuffle className="h-4 w-4 mr-2 group-hover:rotate-12 transition-transform duration-300" />
             <span className="text-sm tracking-wide">Shuffle</span>
           </button>
@@ -214,7 +215,7 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
             <Share className="h-4 w-4 mr-2 group-hover:translate-y-[-2px] transition-transform duration-300" />
             <span className="text-sm tracking-wide">Share</span>
           </button> */}
-          <button className="flex items-center text-[#4e2e20] hover:opacity-80 transition-all duration-300 group" onClick={handleExport}>
+          <button className="flex items-center text-[#222] hover:opacity-80 transition-all duration-300 group" onClick={handleExport}>
             <Upload className="h-4 w-4 mr-2 group-hover:translate-y-[-2px] transition-transform duration-300" />
             <span className="text-sm tracking-wide">Export</span>
           </button>
@@ -364,13 +365,13 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
         <motion.div
           className="md:col-span-6 col-span-12 grid grid-cols-2 gap-4"
         >
-          {resolvedPalette.swatches.map((color: string, i: number) => (
+          {sortedSwatches.map((color: string, i: number) => (
             <motion.div
   key={color}
   className={`rounded-lg flex items-start justify-start text-lg border border-transparent transition-all duration-300 select-text cursor-pointer ${fontMap[resolvedPalette.fontSecondary]?.className ?? ''}`}
   style={{
     background: color,
-    color: getSwatchLabelColor(color, resolvedPalette.swatches),
+    color: getSwatchLabelColor(color, sortedSwatches),
     padding: 24,
     fontSize: 18
   }}
@@ -408,11 +409,11 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
       </div>
       <footer className="mt-12 text-right">
         {/* Footer with animation */}
-        <p className="text-sm text-[#4e2e20]">
+        <p className="text-sm text-[#222]">
           Created with{" "}
           <Link
             href="#"
-            className="font-medium hover:text-[#8d543d] transition-colors duration-300 relative inline-block"
+            className="font-medium hover:text-[#333] transition-colors duration-300 relative inline-block"
           >
             Verbal
           </Link>
