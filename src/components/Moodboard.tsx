@@ -232,12 +232,12 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
       {/* Grid Layout matching the mockup */}
       <div className="grid grid-cols-12 gap-4">
         {/* Font Card 1 */}
-        <div className="md:col-span-3 col-span-6 rounded-lg" style={{ background: sortedSwatches[0] }}>
+        <div className="md:col-span-3 col-span-6 rounded-lg" style={{ background: sortedSwatches[3] }}>
           <div className="p-6 flex flex-col  transition-all duration-500 group">
-            <span className="mb-4 font-serif" style={{ color: getContrastSwatch(sortedSwatches[0], sortedSwatches), fontSize: 18 }}>{resolvedPalette.fontPrimary}</span>
+            <span className="mb-4 font-serif" style={{ color: sortedSwatches[0], fontSize: 18 }}>{resolvedPalette.fontPrimary}</span>
             <span
   className={`text-8xl mt-auto group-hover:scale-105 transition-transform origin-bottom-left duration-700 ${fontMap[resolvedPalette.fontPrimary]?.className ?? ''}`}
-  style={{ color: getContrastSwatch(sortedSwatches[0], sortedSwatches) }}
+  style={{ color: sortedSwatches[0] }}
 >
   Aa
 </span>
@@ -325,12 +325,12 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
                         setIsPlaying(true);
                       }}
                     >
-                      <Play className="h-16 w-16 mb-0" fill={getContrastSwatch(resolvedPalette.accent, resolvedPalette.swatches)} />
+                      <Play className="h-16 w-16 mb-0" fill={getContrastSwatch(resolvedPalette.accent, resolvedPalette.swatches)} stroke="none" />
                     </motion.button>
                   ) : (
                     <motion.button
                       className="flex flex-col items-center justify-center transition-all duration-300 outline-none ring-0 focus:ring-0 focus-visible:ring-0 cursor-pointer"
-                      style={{ color: resolvedPalette.headingColor, background: 'transparent' }}
+                      style={{ color: resolvedPalette.headingColor, background: 'transparent', border: 'none', boxShadow: 'none' }}
                       whileHover={{ scale: 1.08 }}
                       whileTap={{ scale: 0.96 }}
                       aria-label="Stop audio"
