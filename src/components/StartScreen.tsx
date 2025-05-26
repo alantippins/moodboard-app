@@ -50,7 +50,7 @@ export function MoodCreator() {
   return (
     <div className="w-full max-w-md px-4 py-8 text-center">
       <motion.h1
-        className="mb-8 text-3xl font-medium text-[#4e2e20]"
+        className="mb-8 text-3xl font-medium text-[#222]"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -99,7 +99,7 @@ export function MoodCreator() {
               }
             }
           }}
-          className="h-12 pl-4 pr-12 rounded-lg border-[#d5d7da] text-[#717680] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5b4fc] focus:border-[#64748b] transition-all duration-200"
+          className="h-12 pl-4 pr-12 rounded-lg border-[#d5d7da] text-[#0f1219] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#374968] focus:border-[#080b11] transition-all duration-200"
           aria-label="Type a mood word"
         />
         <Button
