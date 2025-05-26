@@ -2,12 +2,13 @@
 
 import Link from "next/link"
 import { ArrowLeft, Play, Shuffle, Upload } from "lucide-react"
-import { useEffect, useState, useRef } from "react"
+import { useState, useEffect, useRef } from "react"
 import { motion } from "framer-motion"
 import { getAudioForMood } from './mood-audio-map';
 import { Howl } from "howler"
 import html2canvas from "html2canvas"
 import { Toast } from "@/components/ui/toast"
+import Image from "next/image";
 
 import { palettes } from "@/data/palettes"
 
@@ -232,30 +233,30 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
       {/* Grid Layout matching the mockup */}
       <div className="grid grid-cols-12 gap-4">
         {/* Font Card 1 */}
-        <div className="md:col-span-3 col-span-6 rounded-lg" style={{ background: sortedSwatches[3] }}>
-          <div className="p-6 flex flex-col  transition-all duration-500 group">
-            <span className="mb-4 font-serif" style={{ color: sortedSwatches[0], fontSize: 18 }}>{resolvedPalette.fontPrimary}</span>
-            <span
-  className={`text-8xl mt-auto group-hover:scale-105 transition-transform origin-bottom-left duration-700 ${fontMap[resolvedPalette.fontPrimary]?.className ?? ''}`}
-  style={{ color: sortedSwatches[0] }}
->
-  Aa
-</span>
-          </div>
-        </div>
+<div className="md:col-span-3 col-span-6 rounded-lg h-72" style={{ background: sortedSwatches[3] }}>
+  <div className="p-6 flex flex-col justify-between items-start h-full transition-all duration-500 group">
+    <span className={fontMap[resolvedPalette.fontPrimary]?.className ?? ''} style={{ color: sortedSwatches[0], fontSize: 18 }}>{resolvedPalette.fontPrimary}</span>
+    <span
+      className={`text-8xl group-hover:scale-105 transition-transform origin-bottom-left duration-700 ${fontMap[resolvedPalette.fontPrimary]?.className ?? ''}`}
+      style={{ color: sortedSwatches[0] }}
+    >
+      Aa
+    </span>
+  </div>
+</div>
 
-        {/* Font Card 2 */}
-        <div className="md:col-span-3 col-span-6 rounded-lg" style={{ background: sortedSwatches[1] }}>
-          <div className="p-6 flex flex-col  transition-all duration-500 group">
-            <span className="mb-4" style={{ color: getContrastSwatch(sortedSwatches[1], sortedSwatches), fontSize: 18 }}>{resolvedPalette.fontSecondary}</span>
-            <span
-  className={`text-8xl mt-auto group-hover:scale-105 transition-transform origin-bottom-left duration-700 ${fontMap[resolvedPalette.fontSecondary]?.className ?? ''}`}
-  style={{ color: getContrastSwatch(sortedSwatches[1], sortedSwatches) }}
->
-  Aa
-</span>
-          </div>
-        </div>
+{/* Font Card 2 */}
+<div className="md:col-span-3 col-span-6 rounded-lg h-72" style={{ background: sortedSwatches[1] }}>
+  <div className="p-6 flex flex-col justify-between items-start h-full transition-all duration-500 group">
+    <span className={fontMap[resolvedPalette.fontSecondary]?.className ?? ''} style={{ color: getContrastSwatch(sortedSwatches[1], sortedSwatches), fontSize: 18 }}>{resolvedPalette.fontSecondary}</span>
+    <span
+      className={`text-8xl group-hover:scale-105 transition-transform origin-bottom-left duration-700 ${fontMap[resolvedPalette.fontSecondary]?.className ?? ''}`}
+      style={{ color: getContrastSwatch(sortedSwatches[1], sortedSwatches) }}
+    >
+      Aa
+    </span>
+  </div>
+</div>
 
         {/* Shape Card */}
         <div className="md:col-span-6 col-span-12 row-span-2 rounded-lg" style={{ background: resolvedPalette.background }}>
@@ -272,7 +273,7 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
     {typeof resolvedPalette.svg === 'function'
   ? resolvedPalette.svg({ width: 240, height: 260 })
   : typeof resolvedPalette.svg === 'string' && resolvedPalette.svg
-    ? <img src={resolvedPalette.svg} width={240} height={260} alt={resolvedPalette.name + ' illustration'} />
+    ? <Image src={resolvedPalette.svg} width={240} height={260} alt={resolvedPalette.name + ' illustration'} />
     : null}
   </motion.div>
 </span>

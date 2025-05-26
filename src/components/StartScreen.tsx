@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image";
 import { useState } from "react"
 import { Palette } from '@/data/palettes';
 import { motion } from "framer-motion"
@@ -177,7 +178,7 @@ export function MoodCreator() {
               {typeof palettes["stone"].svg === 'function'
   ? palettes["stone"].svg({ width: 20, height: 20 })
   : typeof palettes["stone"].svg === 'string' && palettes["stone"].svg
-    ? <img src={palettes["stone"].svg} width={20} height={20} alt="Stone illustration" />
+    ? <Image src={palettes["stone"].svg} width={20} height={20} alt="Stone illustration" />
     : null}
             </motion.span>
             Stone
@@ -224,7 +225,7 @@ export function MoodCreator() {
               {typeof palettes["celestial"].svg === 'function'
   ? palettes["celestial"].svg({ width: 20, height: 20 })
   : typeof palettes["celestial"].svg === 'string' && palettes["celestial"].svg
-    ? <img src={palettes["celestial"].svg} width={20} height={20} alt="Celestial illustration" />
+    ? <Image src={palettes["celestial"].svg} width={20} height={20} alt="Celestial illustration" />
     : null}
             </motion.span>
             Celestial
@@ -271,7 +272,7 @@ export function MoodCreator() {
               {typeof palettes["dusty peach"].svg === 'function'
   ? palettes["dusty peach"].svg({ width: 20, height: 20 })
   : typeof palettes["dusty peach"].svg === 'string' && palettes["dusty peach"].svg
-    ? <img src={palettes["dusty peach"].svg} width={20} height={20} alt="Dusty Peach illustration" />
+    ? <Image src={palettes["dusty peach"].svg} width={20} height={20} alt="Dusty Peach illustration" />
     : null}
             </motion.span>
             Dusty Peach

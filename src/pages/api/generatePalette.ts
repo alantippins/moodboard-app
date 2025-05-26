@@ -8,7 +8,7 @@ if (!process.env.OPENAI_API_KEY) {
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-import { converter, formatHex } from 'culori';
+import { converter } from 'culori';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -44,7 +44,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const hexToOklch = converter('oklch');
     const lightThreshold = 0.85;
     const darkThreshold = 0.25;
-    let swatches = palette.swatches.slice(0, 4); // ensure max 4
+    const swatches = palette.swatches.slice(0, 4); // ensure max 4
 
     // Find lightest and darkest
     let lightIdx = -1, darkIdx = -1, minL = 1, maxL = 0;
