@@ -84,7 +84,7 @@ export function MoodCreator() {
                     const palette = data.palette;
                     if (!["stone", "celestial", "dusty peach"].includes((palette.name || "").toLowerCase())) {
                       const { generateGeometricSVG } = await import("@/utils/generateGeometricSVG");
-                      palette.svg = (props: any) => generateGeometricSVG(palette, palette.name || inputValue);
+                      palette.svg = () => generateGeometricSVG(palette, palette.name || inputValue);
                     }
                     setGeneratedPalette(palette);
                   } else {
@@ -125,7 +125,7 @@ export function MoodCreator() {
                   const palette = data.palette;
                   if (!["stone", "celestial", "dusty peach"].includes((palette.name || "").toLowerCase())) {
                     const { generateGeometricSVG } = await import("@/utils/generateGeometricSVG");
-                    palette.svg = (props: any) => generateGeometricSVG(palette, palette.name || inputValue);
+                    palette.svg = () => generateGeometricSVG(palette, palette.name || inputValue);
                   }
                   setGeneratedPalette(palette);
                 } else {
