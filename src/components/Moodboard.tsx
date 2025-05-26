@@ -116,55 +116,143 @@ function spreadSwatchesByLightness(swatches: string[]): string[] {
 function analyzeMoodWord(word: string): string {
   // Convert to lowercase for matching
   const lowerWord = word.toLowerCase();
-  
+
   // Positive/uplifting words
   const positiveWords = [
-    'joy', 'happy', 'bright', 'vibrant', 'calm', 'peace', 'serene', 'tranquil',
-    'gentle', 'soft', 'warm', 'light', 'fresh', 'spring', 'summer', 'bloom', 'blossom',
-    'delight', 'elegant', 'grace', 'harmony', 'balance', 'zen', 'dream', 'hope'
+    "joy",
+    "happy",
+    "bright",
+    "vibrant",
+    "calm",
+    "peace",
+    "serene",
+    "tranquil",
+    "gentle",
+    "soft",
+    "warm",
+    "light",
+    "fresh",
+    "spring",
+    "summer",
+    "bloom",
+    "blossom",
+    "delight",
+    "elegant",
+    "grace",
+    "harmony",
+    "balance",
+    "zen",
+    "dream",
+    "hope",
   ];
-  
+
   // Negative/intense words
   const negativeWords = [
-    'disaster', 'chaos', 'dark', 'gloomy', 'storm', 'tension', 'conflict', 'crisis',
-    'danger', 'fear', 'horror', 'terror', 'dread', 'anxiety', 'stress', 'panic',
-    'rage', 'anger', 'fury', 'wrath', 'destruction', 'ruin', 'decay', 'death', 'end',
-    'nightmare', 'broken', 'shattered', 'twisted', 'corrupt', 'toxic', 'poison'
+    "disaster",
+    "chaos",
+    "dark",
+    "gloomy",
+    "storm",
+    "tension",
+    "conflict",
+    "crisis",
+    "danger",
+    "fear",
+    "horror",
+    "terror",
+    "dread",
+    "anxiety",
+    "stress",
+    "panic",
+    "rage",
+    "anger",
+    "fury",
+    "wrath",
+    "destruction",
+    "ruin",
+    "decay",
+    "death",
+    "end",
+    "nightmare",
+    "broken",
+    "shattered",
+    "twisted",
+    "corrupt",
+    "toxic",
+    "poison",
   ];
-  
+
   // Neutral/ambiguous words
   const neutralWords = [
-    'stone', 'earth', 'water', 'fire', 'air', 'metal', 'wood', 'nature',
-    'urban', 'city', 'street', 'modern', 'vintage', 'retro', 'classic',
-    'minimal', 'abstract', 'organic', 'digital', 'tech', 'future', 'past'
+    "stone",
+    "earth",
+    "water",
+    "fire",
+    "air",
+    "metal",
+    "wood",
+    "nature",
+    "urban",
+    "city",
+    "street",
+    "modern",
+    "vintage",
+    "retro",
+    "classic",
+    "minimal",
+    "abstract",
+    "organic",
+    "digital",
+    "tech",
+    "future",
+    "past",
   ];
-  
+
   // Energetic/dynamic words
   const energeticWords = [
-    'energy', 'power', 'force', 'dynamic', 'electric', 'spark', 'flash',
-    'bold', 'strong', 'intense', 'vivid', 'active', 'motion', 'movement',
-    'rhythm', 'beat', 'pulse', 'flow', 'rush', 'speed', 'swift', 'quick'
+    "energy",
+    "power",
+    "force",
+    "dynamic",
+    "electric",
+    "spark",
+    "flash",
+    "bold",
+    "strong",
+    "intense",
+    "vivid",
+    "active",
+    "motion",
+    "movement",
+    "rhythm",
+    "beat",
+    "pulse",
+    "flow",
+    "rush",
+    "speed",
+    "swift",
+    "quick",
   ];
-  
+
   // Check for word matches in each category
   for (const positiveWord of positiveWords) {
-    if (lowerWord.includes(positiveWord)) return 'positive';
+    if (lowerWord.includes(positiveWord)) return "positive";
   }
-  
+
   for (const negativeWord of negativeWords) {
-    if (lowerWord.includes(negativeWord)) return 'negative';
+    if (lowerWord.includes(negativeWord)) return "negative";
   }
-  
+
   for (const energeticWord of energeticWords) {
-    if (lowerWord.includes(energeticWord)) return 'energetic';
+    if (lowerWord.includes(energeticWord)) return "energetic";
   }
-  
+
   for (const neutralWord of neutralWords) {
-    if (lowerWord.includes(neutralWord)) return 'neutral';
+    if (lowerWord.includes(neutralWord)) return "neutral";
   }
-  
+
   // Default to neutral if no match found
-  return 'neutral';
+  return "neutral";
 }
 
 // Generate a heading based on palette characteristics and mood word
@@ -174,152 +262,154 @@ function generateHeading(palette: Palette): string {
       bright: [
         "Joyful expressions, vivid energy, a celebration of light.",
         "Vibrant optimism, uplifting presence, an embrace of possibility.",
-        "Radiant clarity, hopeful voice, a testament to brightness."
+        "Radiant clarity, hopeful voice, a testament to brightness.",
       ],
       muted: [
         "Gentle contentment, quiet joy, a harmony of subtle tones.",
         "Soft whispers of happiness, understated delight, a thoughtful approach.",
-        "Peaceful nuance, serene beauty, an exercise in quiet joy."
+        "Peaceful nuance, serene beauty, an exercise in quiet joy.",
       ],
       dark: [
         "Deep satisfaction, mysterious allure, a study in rich emotion.",
         "Profound contentment, contemplative warmth, an exploration of depth.",
-        "Intense fulfillment, comforting presence, a statement of completeness."
+        "Intense fulfillment, comforting presence, a statement of completeness.",
       ],
       light: [
         "Airy happiness, delicate touch, an expression of lightness.",
         "Ethereal joy, pristine simplicity, a breath of fresh delight.",
-        "Luminous optimism, open possibility, an invitation to happiness."
+        "Luminous optimism, open possibility, an invitation to happiness.",
       ],
       warm: [
         "Radiant warmth, inviting embrace, a feeling of comfort.",
         "Glowing contentment, nurturing presence, a sense of belonging.",
-        "Sunset joy, emotional resonance, a connection to happiness."
+        "Sunset joy, emotional resonance, a connection to happiness.",
       ],
       cool: [
         "Refreshing satisfaction, calm clarity, a moment of peace.",
         "Serene waters of joy, composed balance, a thoughtful happiness.",
-        "Cool serenity, tranquil approach, a considered contentment."
-      ]
+        "Cool serenity, tranquil approach, a considered contentment.",
+      ],
     },
     negative: {
       bright: [
         "Jarring contrast, unsettling energy, a statement of disruption.",
         "Tense vibrance, uneasy presence, an assertion of conflict.",
-        "Striking discord, challenging voice, a confrontation with chaos."
+        "Striking discord, challenging voice, a confrontation with chaos.",
       ],
       muted: [
         "Subdued tension, quiet unease, a balance of conflict and restraint.",
         "Muffled warnings, understated distress, an approach to disorder.",
-        "Subtle disquiet, restrained turmoil, an exercise in controlled chaos."
+        "Subtle disquiet, restrained turmoil, an exercise in controlled chaos.",
       ],
       dark: [
         "Deep dissonance, ominous allure, a study in shadow and threat.",
         "Rich depths of tension, foreboding mood, an exploration of darkness.",
-        "Intense disturbance, threatening presence, a powerful statement of unease."
+        "Intense disturbance, threatening presence, a powerful statement of unease.",
       ],
       light: [
         "Deceptive lightness, fragile facade, an expression of hidden danger.",
         "Faded warning, brittle simplicity, a breath before the storm.",
-        "Spectral unease, hollow space, an invitation to uncertainty."
+        "Spectral unease, hollow space, an invitation to uncertainty.",
       ],
       warm: [
         "Feverish heat, uncomfortable closeness, a feeling of tension.",
         "Burning discomfort, oppressive presence, a sense of approaching danger.",
-        "Inflammatory hues, destructive resonance, a connection to chaos."
+        "Inflammatory hues, destructive resonance, a connection to chaos.",
       ],
       cool: [
         "Icy detachment, alienating calm, a moment of isolation.",
         "Frigid waters, unbalanced stillness, a distant perspective.",
-        "Cold precision, clinical approach, a design of calculated disorder."
-      ]
+        "Cold precision, clinical approach, a design of calculated disorder.",
+      ],
     },
     energetic: {
       bright: [
         "Bold dynamism, electric energy, a statement of power.",
         "Vibrant force, kinetic presence, an assertion of movement.",
-        "Striking intensity, energized voice, a celebration of action."
+        "Striking intensity, energized voice, a celebration of action.",
       ],
       muted: [
         "Contained power, quiet strength, a balance of force and control.",
         "Potential energy, understated intensity, a thoughtful approach to power.",
-        "Subtle dynamism, restrained vigor, an exercise in controlled force."
+        "Subtle dynamism, restrained vigor, an exercise in controlled force.",
       ],
       dark: [
         "Deep power, magnetic allure, a study in concentrated force.",
         "Rich intensity, potent mood, an exploration of primal energy.",
-        "Focused strength, commanding presence, a powerful statement."
+        "Focused strength, commanding presence, a powerful statement.",
       ],
       light: [
         "Swift lightness, nimble touch, an expression of agile energy.",
         "Ethereal force, dynamic simplicity, a breath of active air.",
-        "Luminous motion, kinetic possibility, an invitation to movement."
+        "Luminous motion, kinetic possibility, an invitation to movement.",
       ],
       warm: [
         "Radiant energy, active embrace, a feeling of vital heat.",
         "Glowing intensity, energetic presence, a sense of constant motion.",
-        "Fiery hues, passionate resonance, a connection to primal force."
+        "Fiery hues, passionate resonance, a connection to primal force.",
       ],
       cool: [
         "Electric clarity, focused calm, a moment of directed power.",
         "Flowing currents, dynamic balance, a controlled perspective.",
-        "Cool precision, calculated approach, a designed intensity."
-      ]
+        "Cool precision, calculated approach, a designed intensity.",
+      ],
     },
     neutral: {
       bright: [
         "Bold expressions, vivid energy, a statement of purpose.",
         "Vibrant tones, dynamic presence, an assertion of identity.",
-        "Striking clarity, confident voice, a celebration of color."
+        "Striking clarity, confident voice, a celebration of color.",
       ],
       muted: [
         "Soft tones, quiet intent, a balance of form and feeling.",
         "Gentle whispers, understated elegance, a thoughtful approach.",
-        "Subtle nuance, restrained beauty, an exercise in refinement."
+        "Subtle nuance, restrained beauty, an exercise in refinement.",
       ],
       dark: [
         "Deep resonance, mysterious allure, a study in contrast.",
         "Rich depths, contemplative mood, an exploration of shadow.",
-        "Intense focus, dramatic presence, a powerful statement."
+        "Intense focus, dramatic presence, a powerful statement.",
       ],
       light: [
         "Airy lightness, delicate touch, an expression of clarity.",
         "Ethereal glow, pristine simplicity, a breath of fresh air.",
-        "Luminous space, open possibility, an invitation to imagine."
+        "Luminous space, open possibility, an invitation to imagine.",
       ],
       warm: [
         "Radiant warmth, inviting embrace, a feeling of comfort.",
         "Glowing embers, nurturing presence, a sense of belonging.",
-        "Sunset hues, emotional resonance, a connection to memory."
+        "Sunset hues, emotional resonance, a connection to memory.",
       ],
       cool: [
         "Crisp clarity, refreshing calm, a moment of reflection.",
         "Serene waters, composed balance, a thoughtful perspective.",
-        "Cool precision, intellectual approach, a considered design."
-      ]
-    }
+        "Cool precision, intellectual approach, a considered design.",
+      ],
+    },
   };
-  
+
   // Determine mood sentiment from palette name
   const moodSentiment = analyzeMoodWord(palette.name);
-  
+
   // Determine palette color characteristics
   let colorType = "muted"; // default
-  
+
   // Analyze palette to determine its primary characteristic
-  const avgLightness = palette.swatches.reduce((sum, swatch) => {
-    return sum + (hexToOklch(swatch)?.l ?? 0.5);
-  }, 0) / palette.swatches.length;
-  
-  const avgChroma = palette.swatches.reduce((sum, swatch) => {
-    return sum + (hexToOklch(swatch)?.c ?? 0.1);
-  }, 0) / palette.swatches.length;
-  
+  const avgLightness =
+    palette.swatches.reduce((sum, swatch) => {
+      return sum + (hexToOklch(swatch)?.l ?? 0.5);
+    }, 0) / palette.swatches.length;
+
+  const avgChroma =
+    palette.swatches.reduce((sum, swatch) => {
+      return sum + (hexToOklch(swatch)?.c ?? 0.1);
+    }, 0) / palette.swatches.length;
+
   // Determine warmth/coolness (hue)
-  const hues = palette.swatches.map(swatch => hexToOklch(swatch)?.h ?? 0);
-  const warmHues = hues.filter(h => (h >= 20 && h <= 180));
-  const isWarm = warmHues.length > (hues.length / 2);
-  
+  const hues = palette.swatches.map((swatch) => hexToOklch(swatch)?.h ?? 0);
+  const warmHues = hues.filter((h) => h >= 20 && h <= 180);
+  const isWarm = warmHues.length > hues.length / 2;
+
   if (avgChroma > 0.15) {
     colorType = "bright";
   } else if (avgLightness > 0.7) {
@@ -331,7 +421,7 @@ function generateHeading(palette: Palette): string {
   } else {
     colorType = "cool";
   }
-  
+
   // Get random heading from the appropriate category
   const sentimentOptions = headings[moodSentiment] || headings.neutral;
   const options = sentimentOptions[colorType] || sentimentOptions.muted;
@@ -343,25 +433,27 @@ function generateHeading(palette: Palette): string {
 function generateDescription(palette: Palette): string {
   const name = palette.name;
   const moodSentiment = analyzeMoodWord(name);
-  
+
   // Analyze palette to determine its characteristics
-  const avgLightness = palette.swatches.reduce((sum, swatch) => {
-    return sum + (hexToOklch(swatch)?.l ?? 0.5);
-  }, 0) / palette.swatches.length;
-  
-  const avgChroma = palette.swatches.reduce((sum, swatch) => {
-    return sum + (hexToOklch(swatch)?.c ?? 0.1);
-  }, 0) / palette.swatches.length;
-  
+  const avgLightness =
+    palette.swatches.reduce((sum, swatch) => {
+      return sum + (hexToOklch(swatch)?.l ?? 0.5);
+    }, 0) / palette.swatches.length;
+
+  const avgChroma =
+    palette.swatches.reduce((sum, swatch) => {
+      return sum + (hexToOklch(swatch)?.c ?? 0.1);
+    }, 0) / palette.swatches.length;
+
   // Determine palette qualities based on color characteristics
   const colorQualities = [];
-  
+
   if (avgChroma > 0.15) {
     colorQualities.push("vibrant", "expressive", "bold");
   } else {
     colorQualities.push("restrained", "subtle", "nuanced");
   }
-  
+
   if (avgLightness > 0.7) {
     colorQualities.push("airy", "light", "open");
   } else if (avgLightness < 0.3) {
@@ -369,52 +461,93 @@ function generateDescription(palette: Palette): string {
   } else {
     colorQualities.push("balanced", "harmonious", "measured");
   }
-  
+
   // Determine mood-specific qualities based on sentiment
   const moodQualities: Record<string, string[]> = {
-    positive: ["uplifting", "joyful", "delightful", "pleasant", "cheerful", "optimistic", "serene", "tranquil"],
-    negative: ["tense", "chaotic", "unsettling", "disruptive", "turbulent", "challenging", "complex", "dramatic"],
-    energetic: ["dynamic", "powerful", "forceful", "energetic", "active", "lively", "vigorous", "spirited"],
-    neutral: ["thoughtful", "considered", "balanced", "deliberate", "composed", "structured", "defined", "precise"]
+    positive: [
+      "uplifting",
+      "joyful",
+      "delightful",
+      "pleasant",
+      "cheerful",
+      "optimistic",
+      "serene",
+      "tranquil",
+    ],
+    negative: [
+      "tense",
+      "chaotic",
+      "unsettling",
+      "disruptive",
+      "turbulent",
+      "challenging",
+      "complex",
+      "dramatic",
+    ],
+    energetic: [
+      "dynamic",
+      "powerful",
+      "forceful",
+      "energetic",
+      "active",
+      "lively",
+      "vigorous",
+      "spirited",
+    ],
+    neutral: [
+      "thoughtful",
+      "considered",
+      "balanced",
+      "deliberate",
+      "composed",
+      "structured",
+      "defined",
+      "precise",
+    ],
   };
-  
+
   // Combine color and mood qualities
-  const qualities = [...colorQualities, ...(moodQualities[moodSentiment] || moodQualities.neutral)];
-  
+  const qualities = [
+    ...colorQualities,
+    ...(moodQualities[moodSentiment] || moodQualities.neutral),
+  ];
+
   // Pick random qualities
   const quality1 = qualities[Math.floor(Math.random() * qualities.length)];
   let quality2 = qualities[Math.floor(Math.random() * qualities.length)];
   while (quality2 === quality1) {
     quality2 = qualities[Math.floor(Math.random() * qualities.length)];
   }
-  
+
   // Generate description templates based on sentiment
   const templates: Record<string, string[]> = {
     positive: [
       `${name} radiates with ${quality1} ${quality2}. It brings a sense of uplift and clarity, creating a visual language that feels both fresh and inviting. A palette that inspires optimism.`,
       `${name} captures the essence of ${quality1} joy. Each color speaks with ${quality2} harmony, creating a space where positivity and balance coexist naturally.`,
-      `The spirit of ${name} lies in its ${quality1} character. It creates environments that feel ${quality2} and welcoming, inviting both celebration and peaceful reflection.`
+      `The spirit of ${name} lies in its ${quality1} character. It creates environments that feel ${quality2} and welcoming, inviting both celebration and peaceful reflection.`,
     ],
     negative: [
       `${name} confronts with ${quality1} ${quality2}. It doesn't shy away from tension or contrast. Instead, it explores the boundary between order and disruption. A palette that challenges perception.`,
       `${name} embodies a sense of ${quality1} intensity. Each color speaks with ${quality2} force, creating a visual language that acknowledges complexity and emotional depth.`,
-      `The power of ${name} emerges from its ${quality1} nature. It creates spaces that feel ${quality2} and provocative, inviting both introspection and a reconsideration of balance.`
+      `The power of ${name} emerges from its ${quality1} nature. It creates spaces that feel ${quality2} and provocative, inviting both introspection and a reconsideration of balance.`,
     ],
     energetic: [
       `${name} pulses with ${quality1} ${quality2}. It captures movement and vitality, creating a visual rhythm that feels both dynamic and purposeful. A palette that refuses to stand still.`,
       `${name} embodies pure ${quality1} energy. Each color speaks with ${quality2} intensity, creating a visual current that propels the eye forward with deliberate momentum.`,
-      `The force of ${name} comes from its ${quality1} character. It creates environments that feel ${quality2} and kinetic, inviting both action and a sense of constant possibility.`
+      `The force of ${name} comes from its ${quality1} character. It creates environments that feel ${quality2} and kinetic, inviting both action and a sense of constant possibility.`,
     ],
     neutral: [
       `${name} evokes ${quality1} ${quality2}. It's not trying to be loud or sharp. Instead, it sits comfortably between eras. Modern in shape, nostalgic in warmth. The kind of palette that breathes.`,
       `${name} captures a sense of ${quality1} purpose. Each color speaks with ${quality2} clarity, creating a visual language that feels both contemporary and timeless.`,
-      `The essence of ${name} lies in its ${quality1} character. It creates spaces that feel ${quality2} and intentional, inviting both reflection and forward movement.`
-    ]
+      `The essence of ${name} lies in its ${quality1} character. It creates spaces that feel ${quality2} and intentional, inviting both reflection and forward movement.`,
+    ],
   };
-  
+
   // Select template based on sentiment
   const sentimentTemplates = templates[moodSentiment] || templates.neutral;
-  return sentimentTemplates[Math.floor(Math.random() * sentimentTemplates.length)];
+  return sentimentTemplates[
+    Math.floor(Math.random() * sentimentTemplates.length)
+  ];
 }
 
 export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
@@ -513,7 +646,7 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
       {/* Header with subtle animation */}
       <div ref={exportRef}>
         <header className="flex md:flex-row md:justify-between md:items-center mb-8 items-center">
-          <div className="flex items-center md:items-center md:flex-row mb-4 md:mb-0 mr-6">
+          <div className="flex items-center md:items-center md:flex-row mr-6">
             {onBack ? (
               <button
                 type="button"

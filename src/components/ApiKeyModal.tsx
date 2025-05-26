@@ -20,12 +20,14 @@ export function ApiKeyModal({ isOpen, onClose, onSubmit }: ApiKeyModalProps) {
       setError("API key is required");
       return;
     }
-    
+
     if (!apiKey.startsWith("sk-")) {
-      setError("Invalid API key format. OpenAI keys typically start with 'sk-'");
+      setError(
+        "Invalid API key format. OpenAI keys typically start with 'sk-'"
+      );
       return;
     }
-    
+
     onSubmit(apiKey);
     setApiKey("");
     setError("");
@@ -51,10 +53,11 @@ export function ApiKeyModal({ isOpen, onClose, onSubmit }: ApiKeyModalProps) {
           >
             <h2 className="text-xl font-medium mb-4">Enter OpenAI API Key</h2>
             <p className="text-sm text-gray-600 mb-4">
-              To generate custom moodboards, please enter your OpenAI API key. 
-              Your key will be stored locally in your browser and never sent to our servers.
+              To generate custom moodboards, please enter your OpenAI API key.
+              Your key will be stored locally in your browser and never sent to
+              our servers.
             </p>
-            
+
             <div className="mb-4">
               <Input
                 type="password"
@@ -71,33 +74,27 @@ export function ApiKeyModal({ isOpen, onClose, onSubmit }: ApiKeyModalProps) {
               />
               {error && <p className="text-red-500 text-sm">{error}</p>}
             </div>
-            
+
             <div className="flex justify-between">
-              <Button
-                variant="outline"
-                onClick={onClose}
-              >
+              <Button variant="outline" onClick={onClose}>
                 Cancel
               </Button>
-              <Button
-                onClick={handleSubmit}
-              >
-                Save API Key
-              </Button>
+              <Button onClick={handleSubmit}>Save API Key</Button>
             </div>
-            
+
             <div className="mt-4 pt-4 border-t border-gray-200">
               <p className="text-xs text-gray-500">
                 You can get an API key from your{" "}
-                <a 
-                  href="https://platform.openai.com/api-keys" 
-                  target="_blank" 
+                <a
+                  href="https://platform.openai.com/api-keys"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-500 hover:underline"
                 >
                   OpenAI account
-                </a>. 
-                Your key will only be used for generating moodboards in this app.
+                </a>
+                . Your key will only be used for generating moodboards in this
+                app.
               </p>
             </div>
           </motion.div>

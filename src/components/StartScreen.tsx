@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input"
 import Moodboard from "@/components/Moodboard"
 import { palettes } from "@/data/palettes"
 import { ApiKeyModal } from "@/components/ApiKeyModal"
+import { ApiKeyPopover } from "@/components/ApiKeyPopover"
+import { generateGeometricSVG } from "@/utils/generateGeometricSVG";
 
 // Local storage key for the API key
 const API_KEY_STORAGE_KEY = "moodboard_openai_api_key";
@@ -25,6 +27,7 @@ export function MoodCreator() {
   const [apiKey, setApiKey] = useState<string>("");
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
   const [apiKeyStatus, setApiKeyStatus] = useState<"set" | "not-set" | "loading">("loading");
+  const [pendingGeneration, setPendingGeneration] = useState(false);
   
   // Load API key from localStorage on component mount
   useEffect(() => {
@@ -38,11 +41,16 @@ export function MoodCreator() {
   }, []);
   
   // Save API key to localStorage
-  const saveApiKey = (key: string) => {
+  const saveApiKey = async (key: string) => {
     localStorage.setItem(API_KEY_STORAGE_KEY, key);
     setApiKey(key);
     setApiKeyStatus("set");
+    if (pendingGeneration) {
+      setPendingGeneration(false);
+      await handleMoodboard();
+    }
   };
+
   
   // Clear API key from localStorage
   const clearApiKey = () => {
@@ -69,7 +77,47 @@ export function MoodCreator() {
     setSelectedMood(mood === selectedMood ? null : mood)
   }
 
-  
+  // Handle moodboard generation on Enter
+  const handleMoodboard = async () => {
+    const normalized = inputValue.trim().toLowerCase().replace(/[-_]/g, '').replace(/\s+/g, ' ');
+    if (["stone", "celestial", "dusty peach"].includes(normalized)) {
+      setSelectedMood(normalized.replace(/\s+/g, '-'));
+    } else if (normalized) {
+      setLoading(true);
+      setError(null);
+      // Check if API key is set
+      if (apiKeyStatus !== "set") {
+        setShowApiKeyModal(true);
+        setPendingGeneration(true);
+        setLoading(false);
+        return;
+      }
+      try {
+        const res = await fetch('/api/generatePalette', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            word: normalized,
+            apiKey: apiKey 
+          }),
+        });
+        const data = await res.json();
+        if (data.palette) {
+          // Assign SVG generator for custom palettes if not present
+          if (!data.palette.svg) {
+            data.palette.svg = (props) => generateGeometricSVG(data.palette, data.palette.name || inputValue, 240);
+          }
+          setGeneratedPalette(data.palette);
+        } else {
+          setError(data.error || "Failed to generate palette");
+        }
+      } catch (err) {
+        setError("Error generating palette");
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
 
   if (generatedPalette) {
     return <Moodboard palette={generatedPalette} onBack={() => { setGeneratedPalette(null); setInputValue(""); }} />;
@@ -96,57 +144,18 @@ export function MoodCreator() {
 
       <div className="relative mb-4">
         <Input
-          placeholder={loading ? "Generating moodboard..." : "Try 'dusty peach'"}
+          type="text"
+          placeholder={loading ? "Generating moodboard..." : "Enter a mood word (e.g. cozy, vibrant)"}
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          disabled={loading}
-          onKeyDown={async (e) => {
-            if (e.key === 'Enter') {
-              const normalized = inputValue.trim().toLowerCase().replace(/[-_]/g, '').replace(/\s+/g, ' ');
-              if (["stone", "celestial", "dusty peach"].includes(normalized)) {
-                setSelectedMood(normalized.replace(/\s+/g, '-'));
-              } else if (normalized) {
-                setLoading(true);
-                setError(null);
-                // Check if API key is set
-                if (apiKeyStatus !== "set") {
-                  setShowApiKeyModal(true);
-                  setLoading(false);
-                  return;
-                }
-                
-                try {
-                  const res = await fetch('/api/generatePalette', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                      word: normalized,
-                      apiKey: apiKey 
-                    }),
-                  });
-                  const data = await res.json();
-                  if (data.palette) {
-                    const palette = data.palette;
-                    if (!["stone", "celestial", "dusty peach"].includes((palette.name || "").toLowerCase())) {
-                      const { generateGeometricSVG } = await import("@/utils/generateGeometricSVG");
-                      palette.svg = () => generateGeometricSVG(palette, palette.name || inputValue);
-                    }
-                    setGeneratedPalette(palette);
-                  } else {
-                    setError('Could not generate moodboard.');
-                  }
-                } catch {
-
-                  setError('Failed to contact OpenAI API.');
-                } finally {
-                  setLoading(false);
-                }
-              }
-            }
+          className="w-full pr-10"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleMoodboard();
           }}
-          className={`h-12 pl-4 pr-12 rounded-lg border-[#d5d7da] text-[#0f1219] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#374968] focus:border-[#080b11] transition-all duration-200 ${loading ? 'bg-[#f9f9fa]' : ''}`}
-          aria-label="Type a mood word"
+          disabled={loading}
         />
+
+        {/* Submit button or loading spinner */}
         {loading ? (
           <motion.div 
             className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5"
@@ -163,52 +172,11 @@ export function MoodCreator() {
             size="icon"
             className="absolute right-2 top-1/2 -translate-y-1/2 text-[#717680] hover:text-[#535862] hover:bg-transparent cursor-pointer"
             disabled={inputValue.trim() === ''}
-            onClick={async () => {
-            const normalized = inputValue.trim().toLowerCase().replace(/[-_]/g, '').replace(/\s+/g, ' ');
-            if (["stone", "celestial", "dusty peach"].includes(normalized)) {
-              setSelectedMood(normalized);
-            } else if (normalized) {
-              setLoading(true);
-              setError(null);
-              // Check if API key is set
-              if (apiKeyStatus !== "set") {
-                setShowApiKeyModal(true);
-                setLoading(false);
-                return;
-              }
-              
-              try {
-                const res = await fetch('/api/generatePalette', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ 
-                    word: normalized,
-                    apiKey: apiKey 
-                  }),
-                });
-                const data = await res.json();
-                if (data.palette) {
-                  const palette = data.palette;
-                  if (!["stone", "celestial", "dusty peach"].includes((palette.name || "").toLowerCase())) {
-                    const { generateGeometricSVG } = await import("@/utils/generateGeometricSVG");
-                    palette.svg = () => generateGeometricSVG(palette, palette.name || inputValue);
-                  }
-                  setGeneratedPalette(palette);
-                } else {
-                  setError('Could not generate moodboard.');
-                }
-              } catch {
-
-                setError('Failed to contact OpenAI API.');
-              } finally {
-                setLoading(false);
-              }
-            }
-          }}
-          aria-label="Submit mood word"
-        >
-          <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14m-7-7l7 7-7 7" /></svg>
-        </Button>
+            aria-label="Submit mood word"
+            onClick={handleMoodboard}
+          >
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14m-7-7l7 7-7 7" /></svg>
+          </Button>
         )}
       </div>
 
@@ -379,41 +347,21 @@ export function MoodCreator() {
         <div className="mt-4 text-red-500 text-sm">{error}</div>
       )}
       
-      {/* API Key Status and Management */}
-      <div className="mt-8 flex justify-center">
-        {apiKeyStatus === "set" ? (
-          <div className="flex flex-col items-center">
-            <div className="text-xs text-green-600 mb-2">
-              <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-1"></span>
-              OpenAI API Key is set
-            </div>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={clearApiKey}
-              className="text-xs text-gray-500"
-            >
-              Clear API Key
-            </Button>
-          </div>
-        ) : apiKeyStatus === "not-set" ? (
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => setShowApiKeyModal(true)}
-            className="text-xs text-gray-500"
-          >
-            Set OpenAI API Key
-          </Button>
-        ) : null}
-      </div>
-      
       {/* API Key Modal */}
       <ApiKeyModal 
         isOpen={showApiKeyModal}
         onClose={() => setShowApiKeyModal(false)}
         onSubmit={saveApiKey}
       />
+
+      {/* Floating API Key Popover Icon */}
+      {(apiKeyStatus === "set" || apiKeyStatus === "not-set") && (
+        <ApiKeyPopover
+          apiKeyStatus={apiKeyStatus}
+          onSetKey={() => setShowApiKeyModal(true)}
+          onClearKey={clearApiKey}
+        />
+      )}
     </div>
-  )
+  );
 }
