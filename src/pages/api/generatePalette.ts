@@ -1,28 +1,35 @@
 import OpenAI from 'openai';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { Palette } from '@/data/palettes';
-
-if (!process.env.OPENAI_API_KEY) {
-  throw new Error('OPENAI_API_KEY is required in .env file');
-}
-
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
 import { converter } from 'culori';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
-  const { word } = req.body;
+  
+  const { word, apiKey } = req.body;
+  
   if (!word || typeof word !== 'string') {
     return res.status(400).json({ error: 'Missing or invalid word' });
   }
+  
+  if (!apiKey || typeof apiKey !== 'string') {
+    return res.status(400).json({ error: 'Missing or invalid API key' });
+  }
+  
+  // Initialize OpenAI client with the provided API key
+  const openai = new OpenAI({ apiKey });
 
   // Prompt for GPT
   const prompt = `You are a designer AI. Given the mood word: "${word}", generate a JSON object for a moodboard palette with the following fields: name, background, backgroundAlt, accent, headingColor, textColor, swatches (array of 4 hex colors), fontPrimary, fontSecondary, and audio (suggest a genre or vibe, not a filename). Example output:\n{\n  "name": "Serene Blue",\n  "background": "#e0f7fa",\n  "backgroundAlt": "#b2ebf2",\n  "accent": "#0288d1",\n  "headingColor": "#01579b",\n  "textColor": "#263238",\n  "swatches": ["#e0f7fa", "#b2ebf2", "#0288d1", "#01579b"],\n  "fontPrimary": "Montserrat",\n  "fontSecondary": "Inter",\n  "audio": "calm ambient"\n}\nRespond with only the JSON, no explanation.`;
 
   try {
+    // Validate API key format (basic check)
+    if (!apiKey.startsWith('sk-')) {
+      return res.status(400).json({ error: 'Invalid API key format' });
+    }
+    
     const completion = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: [

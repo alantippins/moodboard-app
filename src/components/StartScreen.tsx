@@ -1,13 +1,17 @@
 "use client"
 
 import Image from "next/image";
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Palette } from '@/data/palettes';
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Moodboard from "@/components/Moodboard"
 import { palettes } from "@/data/palettes"
+import { ApiKeyModal } from "@/components/ApiKeyModal"
+
+// Local storage key for the API key
+const API_KEY_STORAGE_KEY = "moodboard_openai_api_key";
 
 export function MoodCreator() {
   const [inputValue, setInputValue] = useState("");
@@ -16,6 +20,36 @@ export function MoodCreator() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // API key state
+  const [apiKey, setApiKey] = useState<string>("");
+  const [showApiKeyModal, setShowApiKeyModal] = useState(false);
+  const [apiKeyStatus, setApiKeyStatus] = useState<"set" | "not-set" | "loading">("loading");
+  
+  // Load API key from localStorage on component mount
+  useEffect(() => {
+    const storedApiKey = localStorage.getItem(API_KEY_STORAGE_KEY);
+    if (storedApiKey) {
+      setApiKey(storedApiKey);
+      setApiKeyStatus("set");
+    } else {
+      setApiKeyStatus("not-set");
+    }
+  }, []);
+  
+  // Save API key to localStorage
+  const saveApiKey = (key: string) => {
+    localStorage.setItem(API_KEY_STORAGE_KEY, key);
+    setApiKey(key);
+    setApiKeyStatus("set");
+  };
+  
+  // Clear API key from localStorage
+  const clearApiKey = () => {
+    localStorage.removeItem(API_KEY_STORAGE_KEY);
+    setApiKey("");
+    setApiKeyStatus("not-set");
+  };
 
   // Animation variants
   const buttonVariants = {
@@ -74,11 +108,21 @@ export function MoodCreator() {
               } else if (normalized) {
                 setLoading(true);
                 setError(null);
+                // Check if API key is set
+                if (apiKeyStatus !== "set") {
+                  setShowApiKeyModal(true);
+                  setLoading(false);
+                  return;
+                }
+                
                 try {
                   const res = await fetch('/api/generatePalette', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ word: normalized }),
+                    body: JSON.stringify({ 
+                      word: normalized,
+                      apiKey: apiKey 
+                    }),
                   });
                   const data = await res.json();
                   if (data.palette) {
@@ -126,11 +170,21 @@ export function MoodCreator() {
             } else if (normalized) {
               setLoading(true);
               setError(null);
+              // Check if API key is set
+              if (apiKeyStatus !== "set") {
+                setShowApiKeyModal(true);
+                setLoading(false);
+                return;
+              }
+              
               try {
                 const res = await fetch('/api/generatePalette', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ word: normalized }),
+                  body: JSON.stringify({ 
+                    word: normalized,
+                    apiKey: apiKey 
+                  }),
                 });
                 const data = await res.json();
                 if (data.palette) {
@@ -324,6 +378,42 @@ export function MoodCreator() {
       {error && (
         <div className="mt-4 text-red-500 text-sm">{error}</div>
       )}
+      
+      {/* API Key Status and Management */}
+      <div className="mt-8 flex justify-center">
+        {apiKeyStatus === "set" ? (
+          <div className="flex flex-col items-center">
+            <div className="text-xs text-green-600 mb-2">
+              <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-1"></span>
+              OpenAI API Key is set
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={clearApiKey}
+              className="text-xs text-gray-500"
+            >
+              Clear API Key
+            </Button>
+          </div>
+        ) : apiKeyStatus === "not-set" ? (
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => setShowApiKeyModal(true)}
+            className="text-xs text-gray-500"
+          >
+            Set OpenAI API Key
+          </Button>
+        ) : null}
+      </div>
+      
+      {/* API Key Modal */}
+      <ApiKeyModal 
+        isOpen={showApiKeyModal}
+        onClose={() => setShowApiKeyModal(false)}
+        onSubmit={saveApiKey}
+      />
     </div>
   )
 }
