@@ -62,9 +62,10 @@ export function MoodCreator() {
 
       <div className="relative mb-4">
         <Input
-          placeholder="Try 'dusty peach'"
+          placeholder={loading ? "Generating moodboard..." : "Try 'dusty peach'"}
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
+          disabled={loading}
           onKeyDown={async (e) => {
             if (e.key === 'Enter') {
               const normalized = inputValue.trim().toLowerCase().replace(/[-_]/g, '').replace(/\s+/g, ' ');
@@ -99,15 +100,26 @@ export function MoodCreator() {
               }
             }
           }}
-          className="h-12 pl-4 pr-12 rounded-lg border-[#d5d7da] text-[#0f1219] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#374968] focus:border-[#080b11] transition-all duration-200"
+          className={`h-12 pl-4 pr-12 rounded-lg border-[#d5d7da] text-[#0f1219] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#374968] focus:border-[#080b11] transition-all duration-200 ${loading ? 'bg-[#f9f9fa]' : ''}`}
           aria-label="Type a mood word"
         />
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute right-2 top-1/2 -translate-y-1/2 text-[#717680] hover:text-[#535862] hover:bg-transparent cursor-pointer"
-          disabled={inputValue.trim() === '' || loading}
-          onClick={async () => {
+        {loading ? (
+          <motion.div 
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5"
+            animate={{ rotate: 360 }}
+            transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" stroke="#717680" strokeWidth="2" strokeLinecap="round" strokeDasharray="1 6" />
+            </svg>
+          </motion.div>
+        ) : (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-[#717680] hover:text-[#535862] hover:bg-transparent cursor-pointer"
+            disabled={inputValue.trim() === ''}
+            onClick={async () => {
             const normalized = inputValue.trim().toLowerCase().replace(/[-_]/g, '').replace(/\s+/g, ' ');
             if (["stone", "celestial", "dusty peach"].includes(normalized)) {
               setSelectedMood(normalized);
@@ -143,6 +155,7 @@ export function MoodCreator() {
         >
           <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14m-7-7l7 7-7 7" /></svg>
         </Button>
+        )}
       </div>
 
       <motion.div
@@ -294,7 +307,19 @@ export function MoodCreator() {
         </motion.div>
       )}
       {loading && (
-        <div className="mt-4 text-[#717680] text-sm">Generating moodboard...</div>
+        <motion.div 
+          className="mt-3 text-center text-sm text-[#717680]"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <motion.span
+            animate={{ opacity: [0.6, 1, 0.6] }}
+            transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+          >
+            Creating your {inputValue} palette...
+          </motion.span>
+        </motion.div>
       )}
       {error && (
         <div className="mt-4 text-red-500 text-sm">{error}</div>

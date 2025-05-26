@@ -1,6 +1,6 @@
 # FYI: Moodboard App – Decisions & Progress Log
 
-_Last updated: 2025-05-04_
+_Last updated: 2025-05-26_
 
 ## Phase 1: UI & System Foundation
 
@@ -53,10 +53,61 @@ _Last updated: 2025-05-04_
 - **All color, font, and icon usage is semantic and accessible.**
 - **Palette system is now extensible and AI-ready.**
 
-### ✅ Next Steps
+### ✅ Next Steps (Phase 1)
 - Finalize palette roles for all moods.
 - Start experimenting with AI palette generation using the new schema.
 - Continue to test for accessibility and responsive polish.
+
+---
+
+## Phase 2: Enhanced User Experience & Export Functionality
+
+### 📤 Moodboard Export Functionality
+- **White Background & Padding:**
+  - Modified the `handleExport` function to include a white background and padding for exported images.
+  - Added `exportContentRef` to selectively capture only the main content area, excluding UI controls.
+  - Used `html2canvas` with `backgroundColor: '#fff'` and `scale: 2` for higher resolution exports.
+  - **Rationale:** Creates cleaner, more professional exports that focus on the design content rather than UI elements.
+
+- **Export UX Improvements:**
+  - Added cursor pointer to the Export button for better affordance.
+  - Improved visual feedback during export process.
+  - **Rationale:** Small details that improve the overall user experience and make the app feel more polished.
+
+### 🔤 Dynamic Content Generation
+- **Mood-Sensitive Descriptions:**
+  - Implemented `analyzeMoodWord()` to categorize input words into positive, negative, energetic, or neutral sentiments.
+  - Created `generateHeading()` and `generateDescription()` functions that consider both color characteristics AND mood word meaning.
+  - **Rationale:** Ensures descriptions match both the visual palette AND the semantic meaning of the input word (e.g., "disaster" gets appropriately tense, chaotic descriptions).
+
+- **Color Analysis:**
+  - Uses OKLCH color space to analyze lightness, chroma, and hue.
+  - Determines palette characteristics based on average values.
+  - **Rationale:** Creates more accurate and meaningful descriptions that genuinely reflect the visual qualities of each palette.
+
+### ⏳ Loading Experience
+- **Simplified Loading Indicator:**
+  - Integrated loading state directly into the input field UI.
+  - Input becomes disabled with placeholder text changing to "Generating moodboard...".
+  - Submit button replaced with a subtle spinning loader.
+  - Added a simple status message below the input.
+  - **Rationale:** Creates a more focused, less distracting loading experience that maintains the app's clean aesthetic while clearly indicating system activity.
+
+### 🧑‍💻 Code & Architecture Improvements
+- **JSX Structure:**
+  - Fixed various JSX nesting and closing tag issues.
+  - Improved component structure for better maintainability.
+  - **Rationale:** Ensures code quality and prevents rendering issues.
+
+- **Type Safety:**
+  - Removed unnecessary `any` types and unused parameters.
+  - **Rationale:** Improves code quality, prevents potential bugs, and enhances developer experience.
+
+### ✅ Next Steps (Phase 2)
+- Consider adding export format options (PNG/JPG/SVG).
+- Explore social sharing capabilities.
+- Add more dynamic content variations for greater variety.
+- Consider implementing user accounts to save favorite moodboards.
 
 ---
 
