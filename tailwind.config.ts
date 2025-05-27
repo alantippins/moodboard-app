@@ -2,6 +2,8 @@ import type { Config } from "tailwindcss"
 import animatePlugin from "tailwindcss-animate"
 import plugin from "tailwindcss/plugin"
 
+// Tailwind plugin helper
+
 const config: Config = {
   darkMode: "class",
   content: [
@@ -116,11 +118,11 @@ const config: Config = {
   },
   plugins: [
     animatePlugin,
-    plugin((api) => {
-      const { addUtilities, e } = api as unknown;
+    // Animation delay utilities
+    plugin(({ addUtilities }: any) => {
       const animationDelayUtilities: Record<string, { "animation-delay": string }> = {};
       for (let i = 1; i <= 10; i++) {
-        animationDelayUtilities[`.${e(`animation-delay-${i * 100}`)}`] = {
+        animationDelayUtilities[`.animation-delay-${i * 100}`] = {
           "animation-delay": `${i * 0.1}s`,
         };
       }

@@ -12,7 +12,6 @@ import { ApiKeyModal } from "@/components/ApiKeyModal"
 import { ApiKeyPopover } from "@/components/ApiKeyPopover"
 import { generateGeometricSVG } from "@/utils/generateGeometricSVG";
 import { generatePaletteClient } from "@/utils/openaiClient";
-import { getStaticPalette } from "@/utils/staticPalettes";
 
 // Local storage key for the API key
 const API_KEY_STORAGE_KEY = "moodboard_openai_api_key";
