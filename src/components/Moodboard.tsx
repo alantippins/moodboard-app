@@ -622,19 +622,19 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
   }, [mood, palette, presetMoods, mounted]);
 
   // Memoize heading and description based on resolved palette
-  const heading = useMemo(() => 
-    resolvedPalette ? generateHeading(resolvedPalette) : '', 
+  const heading = useMemo(
+    () => (resolvedPalette ? generateHeading(resolvedPalette) : ""),
     [resolvedPalette]
   );
-  
-  const description = useMemo(() => 
-    resolvedPalette ? generateDescription(resolvedPalette) : '', 
+
+  const description = useMemo(
+    () => (resolvedPalette ? generateDescription(resolvedPalette) : ""),
     [resolvedPalette]
   );
 
   // Reverse so that 0 is lightest, 3 is darkest
-  const sortedSwatches = useMemo(() => 
-    spreadSwatchesByLightness(resolvedPalette?.swatches || []).reverse(),
+  const sortedSwatches = useMemo(
+    () => spreadSwatchesByLightness(resolvedPalette?.swatches || []).reverse(),
     [resolvedPalette]
   );
 
@@ -678,7 +678,7 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
             ) : (
               <Link
                 href="#"
-                className="flex items-center text-[#222] hover:opacity-80 transition-all duration-300 group"
+                className="flex items-center text-[#222] hover:opacity-75 transition-colors duration-200 group"
               >
                 <ArrowLeft className="h-4 w-4 mr-2 group-hover:translate-x-[-4px] transition-transform duration-300" />
                 <span className="text-sm tracking-wide">Try a new word</span>
@@ -977,7 +977,7 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
               {sortedSwatches.map((color: string, i: number) => (
                 <motion.div
                   key={color}
-                  className={`rounded-lg flex items-start justify-start text-lg border border-transparent transition-all duration-300 select-text cursor-pointer ${
+                  className={`rounded-xl flex items-start justify-start text-lg border border-transparent transition-all duration-200 select-text cursor-pointer hover:brightness-95 ${
                     fontMap[resolvedPalette.fontSecondary]?.className ?? ""
                   }`}
                   style={{
@@ -996,7 +996,7 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
                       transition: { duration: 0.37, ease: "easeOut" },
                     },
                   }}
-                  whileHover={{ scale: 1.045 }}
+                  whileHover={{ scale: 1.01 }}
                   onClick={async () => {
                     try {
                       await navigator.clipboard.writeText(color.toUpperCase());
@@ -1041,7 +1041,7 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
           <p className="text-sm text-[#222]">
             <Link
               href="https://www.alantippins.com"
-              className="font-medium hover:text-[#333] transition-colors duration-300 relative inline-block"
+              className="font-medium hover:opacity-75 transition-colors duration-200 relative inline-block"
             >
               Created by alantippins.com
             </Link>

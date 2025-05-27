@@ -42,7 +42,7 @@ export function ApiKeyPopover({
       <button
         ref={buttonRef}
         aria-label="API Key Settings"
-        className="bg-white border border-gray-200 rounded-full p-2 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-accent relative"
+        className="bg-white border border-gray-200 rounded-full p-2 hover:opacity-75 hover:scale-[1.045] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent relative"
         onClick={() => setOpen((v) => !v)}
         style={{ fontSize: 20, lineHeight: 1 }}
       >
@@ -93,7 +93,7 @@ export function ApiKeyPopover({
                     onClearKey();
                     setOpen(false);
                   }}
-                  className="text-xs text-gray-600 hover:text-red-600 hover:underline text-left"
+                  className="text-xs text-gray-600 hover:opacity-75 transition-colors duration-200 text-left"
                 >
                   Clear Key
                 </button>
@@ -103,7 +103,7 @@ export function ApiKeyPopover({
                     onSetKey();
                     setOpen(false);
                   }}
-                  className="text-xs text-gray-600 hover:text-gray-700 hover:underline text-left"
+                  className="text-xs text-gray-600 hover:opacity-75 transition-colors duration-200 text-left"
                 >
                   Set Key
                 </button>
