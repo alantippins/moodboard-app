@@ -1,10 +1,63 @@
 # Verbal
 
-**Verbal** is a creative inspiration tool that transforms a single word into a generative micro moodboard—combining color, typography, shape, and sound suggestions to spark creativity and set the mood for your next project.
+<div align="center">
 
-## Concept
+**Verbal** is a creative inspiration tool that transforms words into generative micro moodboards—combining color, typography, shape, and sound to spark creativity.
 
-Enter any word, and Verbal will instantly generate:
+[Demo](https://verbal.design) · [Report Bug](https://github.com/yourusername/verbal/issues) · [Request Feature](https://github.com/yourusername/verbal/issues)
+
+</div>
+
+## ✨ Features
+
+- 🎨 **Color Palettes**: Generate harmonious color combinations that capture your word's essence
+- 🔤 **Typography**: Get font pairing suggestions that match the mood
+- 🎵 **Audio**: Experience ambient soundscapes that complement the visual elements
+- 📱 **Responsive**: Works beautifully on desktop and mobile devices
+- 🚀 **Fast**: Built with Next.js and optimized for performance
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18.0 or later
+- npm or yarn
+
+### Installation
+
+1. Clone the repository
+   ```sh
+   git clone https://github.com/yourusername/verbal.git
+   cd verbal
+   ```
+
+2. Install dependencies
+   ```sh
+   npm install
+   # or
+   yarn install
+   ```
+
+3. Start the development server
+   ```sh
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
+
+## 🛠️ Built With
+
+- [Next.js](https://nextjs.org/) - React framework
+- [Tailwind CSS](https://tailwindcss.com/) - CSS framework
+- [Framer Motion](https://www.framer.com/motion/) - Animation library
+- [Howler.js](https://howlerjs.com/) - Audio library
+- [shadcn/ui](https://ui.shadcn.com/) - UI components
+
+## 👀 Overview
+
+Verbal transforms words into complete design experiences. Type any word like `"euphoric"`, `"dusty peach"`, or `"brutalist"` and instantly receive:
 
 - A harmonious color palette that captures the essence of your word  
 - Typography pairings that complement the mood  
@@ -44,114 +97,102 @@ It's a creative toy with professional applications:
 - **Shape Generation**: See a unique generative pattern based on the word  
 - **Sound Suggestions**: Receive audio mood suggestions that complement the visual elements  
 
-## 🗺️ Phases of Build
+## 💻 Usage
 
-### Phase 1 — MVP (Weekend Build)
+1. Visit the app at [verbal.design](https://verbal.design)
+2. Type any word or phrase
+3. Get instant visual and audio inspiration
+4. Export your moodboard or copy color codes
 
-- Input (text)  
-- Output:  
-  - Color (static mapping JSON)  
-  - Fonts (Google Fonts API, handpicked pairings)  
-  - Sound (preloaded clips via Howler.js or HTML5 audio)  
-  - Simple UI with transitions  
-- Export as poster/image
+## 💡 Use Cases
 
-### Phase 2 — Delight Layer
+- **Design Exploration**: Quick visual direction for new projects
+- **Brand Development**: Explore tone and mood variations
+- **Creative Inspiration**: Break through creative blocks
+- **Art Direction**: Set the mood for photoshoots or layouts
 
-- Voice input via Web Speech API (`SpeechRecognition`)  
-<!-- - Light/dark themes   -->
-<!-- - Shuffle button for re-generating from same input   -->
+## 🌐 API Usage
 
-### Phase 3 — Semantic Intelligence
+Verbal requires an OpenAI API key for advanced word processing. You can:
 
-- Use OpenAI or embedding API to semantically map unknown words to known moods  
-- Add custom word bank with synonyms and modifiers  
-- Allow chaining words or phrases ("dark optimism", "techno pastoral")  
-
-### Phase 4 — Designer Tools
-
-- Save/share moodboards  
-- Drag to tweak palette or fonts  
-- Export as design tokens (CSS/JSON/Sketch variables)  
-- Figma plugin?  
-
-## 🧠 Tone Mapping Logic (v1 Static Set)
-
-| Word        | Color Tags           | Font Pairing           | Sound Mood     | Shape     |
-|-------------|----------------------|-------------------------|----------------|-----------|
-| Minimal     | #ffffff, #f0f0f0     | Inter + IBM Plex Mono   | Soft static    | Line grid |
-| Brutalist   | #111111, #dbdbdb     | Bebas Neue + Lora       | Industrial hum | Blocky    |
-| Euphoric    | #ff00ff, #ffd700     | Sora + Poppins          | Shimmer pad    | Spiral    |
-| Dusty Peach | #f5c6aa, #d8a48f     | Playfair + Work Sans    | Lo-fi loop     | Blob      |
-
-## 🛠️ Tech Stack
-
-- **Frontend:** React + TypeScript + Tailwind CSS  
-- **Fonts:** Google Fonts API  
-- **Color:** Static JSON palette  
-- **Audio:** Howler.js or `<audio>` with local `.mp3`/`.ogg`  
-- **Voice Input:** Web Speech API (Chrome/Edge)  
-- **Deployment:** Netlify or Vercel  
-
-🧱 Project Structure
-Start Screen: Handles mood prompt input and quick-select presets. 
-npx shadcn@2.3.0 add "https://v0.dev/chat/b/b_uttH3XMwsC4?token=eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..YLcSkCl0ivo0Fs6J.GuDEZKnufmOuHKr_7sIKMMKSoRzJ8MZ5E01Js9oWlecYbHWsC8BwPzqXQMg.fmMveyIcV3r3_fCucUo5xA"
+1. Use the app without an API key (limited to preset words)
+2. Add your own API key in the settings
+3. Self-host with your own key
 
 
-Moodboard Screen: Displays the generated mood (colors, fonts, motif, sound). npx shadcn@2.3.0 add "https://v0.dev/chat/b/b_VYs0JX2LyEE?token=eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..LKtYvIGyaFFfel7U.ZeiDexDthAbCVItOSh0_yWGXqBlQ1sBis1kkJt9IU4b0gjjaWeY1UZbhMPw.abEx71TmsVZ0g1vjJLRdcw"
+## 📝 Roadmap
 
+- [ ] Voice input support
+- [ ] Save and share moodboards
+- [ ] Export to design tokens
+- [ ] Figma plugin
 
-lib/moods.ts: Static map of word → mood payload (colors, fonts, sounds, shapes)
+See the [open issues](https://github.com/yourusername/verbal/issues) for a full list of proposed features and known issues.
 
-Routing: Simple page-based routing (/ → /mood?mood=dusty-peach)
+## 🧪 Development
 
-Framework: Uses Windsurf for full Tailwind + Shadcn UI fidelity with production-ready layout
+### Commands
 
-lib/moods.ts: Static mapping of mood keyword → aesthetic payload. Includes:
+```bash
+# Start development server
+npm run dev
 
-colors: string[]
+# Build for production
+npm run build
 
-fonts: { heading: string, body: string }
+# Start production server
+npm start
 
-sound: { label: string, file: string }
+# Run linting
+npm run lint
+```
 
-shape: string
+### Project Structure
 
+```
+verbal/
+├── src/
+│   ├── app/              # Next.js app router
+│   ├── components/       # React components
+│   ├── data/            # Static data and palettes
+│   └── lib/             # Utilities and helpers
+├── public/              # Static assets
+│   └── audio/           # Audio files
+└── package.json
+```
 
-Routing:
+## 🤝 Contributing
 
-/: Start screen for word input or selection
+Contributions are welcome! Here's how you can help:
 
-/mood?mood=dusty-peach: Output screen → aesthetic results
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-Layout: Responsive layout system via Tailwind. Uses large padding, generous white space, and dark mode as default.
+### Development Guidelines
 
+- Follow the existing code style
+- Add JSDoc comments for new functions
+- Update tests if needed
+- Update documentation
 
-Testing Instructions
-Try words like dusty peach, brutalist, euphoric, minimal
+## 🎵 Audio Credits
 
-Check /lib/moods.ts to see predefined results
+All ambient audio tracks are licensed under Creative Commons Zero (CC0) from Pixabay:
 
-Submit a word → check dynamic routing → review generated output
+- "Ambient Music Wide Flower Fields" by SergeQuadrado
+- "Deep Forest Ambient Music" by SergeQuadrado
+- "Deep Theme Passengers Music" by SergeQuadrado
+- "Deep Theme Shifty Alternative" by SergeQuadrado
+- "Gentle Ambient Atmosphere" by SergeQuadrado
+- "Inner Peace Ambient Music" by SergeQuadrado
+- "Spring Hazes Deep Theme Music" by SergeQuadrado
+- "Rainy Lofi City Music" by AlexiAction
 
-Planned Enhancements
-Add framer-motion transitions for tile entrance and sound play feedback
+These tracks are used under [Pixabay License](https://pixabay.com/service/license/), which allows for commercial and non-commercial use without attribution.
 
-Improve sound player UX with waveform or visual pulse
+## 📝 License
 
-Refactor moods.ts to support semantic fallbacks (Phase 3)
-
-Allow saving/sharing generated moodboards
-
-Explore Figma plugin export path
-
-Design Constraints
-No fixed primary color; all accents adapt to mood palette
-
-Typography and color must maintain WCAG contrast
-
-Motifs must be style-mapped (grid, block, blob, spiral, etc)
-
-System must function as a standalone creative tool—no login, no account
-
-
+Distributed under the MIT License. See `LICENSE` for more information.
