@@ -1,21 +1,22 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Always use export for production builds
+  // Configuration for production builds (GitHub Pages)
   ...(process.env.NODE_ENV === 'production' ? { 
     output: 'export',
     images: {
       unoptimized: true,
     },
     // For GitHub Pages deployment
+    basePath: '/moodboard-app',
     assetPrefix: '/moodboard-app',
   } : {}),
-  // Base path for all environments
-  basePath: process.env.NODE_ENV === 'production' ? '/moodboard-app' : '',
+  // Development configuration
+  ...(process.env.NODE_ENV !== 'production' ? {
+    // No base path in development
+  } : {}),
+  // Common configuration
   trailingSlash: true,
-  // Skip generating 404 page for static export
-  skipTrailingSlashRedirect: true,
-  skipMiddlewareUrlNormalize: true
 };
 
 export default nextConfig;
