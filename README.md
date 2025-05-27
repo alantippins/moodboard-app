@@ -1,4 +1,4 @@
-# Verbal
+# Moodboard App
 
 <div align="center">
 
@@ -29,7 +29,7 @@
 
    ```sh
    git clone https://github.com/alantippins/moodboard-app.git
-   cd verbal
+   cd moodboard-app
    ```
 
 2. Install dependencies
@@ -102,7 +102,7 @@ It's a creative toy with professional applications:
 
 ## 💻 Usage
 
-1. Visit the app at [verbal.design](https://alantippins.com/moodboard-app/)
+1. Visit the app at [Moodboard App](https://alantippins.com/moodboard-app/)
 2. Type any word or phrase
 3. Get instant visual and audio inspiration
 4. Export your moodboard or copy color codes
@@ -128,6 +128,7 @@ Verbal requires an OpenAI API key for advanced word processing. You can:
 - [ ] Save and share moodboards
 - [ ] Export to design tokens
 - [ ] Figma plugin
+- [ ]
 
 See the [open issues](https://github.com/alantippins/moodboard-app/issues) for a full list of proposed features and known issues.
 
@@ -152,7 +153,7 @@ npm run lint
 ### Project Structure
 
 ```
-verbal/
+moodboard-app/
 ├── src/
 │   ├── app/              # Next.js app router
 │   ├── components/       # React components
