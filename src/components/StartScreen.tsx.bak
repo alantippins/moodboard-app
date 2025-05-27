@@ -11,11 +11,25 @@ import { palettes } from "@/data/palettes"
 import { ApiKeyModal } from "@/components/ApiKeyModal"
 import { ApiKeyPopover } from "@/components/ApiKeyPopover"
 import { generateGeometricSVG } from "@/utils/generateGeometricSVG";
-import { generatePaletteClient } from "@/utils/openaiClient";
 import { getStaticPalette } from "@/utils/staticPalettes";
+import { generatePaletteClient } from "@/utils/openaiClient";
 
 // Local storage key for the API key
 const API_KEY_STORAGE_KEY = "moodboard_openai_api_key";
+
+// Animation variants
+const buttonVariants = {
+  initial: { scale: 1 },
+  hover: { scale: 1.05, transition: { duration: 0.2 } },
+  tap: { scale: 0.98, transition: { duration: 0.1 } },
+  selected: {
+    scale: [1, 1.08, 1],
+    transition: {
+      duration: 0.5,
+      times: [0, 0.3, 1],
+    },
+  },
+};
 
 export function MoodCreator() {
   const [inputValue, setInputValue] = useState("");
@@ -102,10 +116,6 @@ export function MoodCreator() {
         const isStaticDeployment = window.location.hostname.includes('github.io') || 
                                  process.env.NODE_ENV === 'production';
         
-        console.log('Environment:', process.env.NODE_ENV);
-        console.log('Is static deployment:', isStaticDeployment);
-        console.log('API key status:', apiKeyStatus);
-        
         let result;
         
         if (isStaticDeployment) {
@@ -144,11 +154,12 @@ export function MoodCreator() {
           setError("Received invalid response format");
         }
       } catch (error: unknown) {
-      console.error('Error generating palette:', error);
-      setError("Error generating palette");
-    } finally {
-      setLoading(false);
-    }
+        console.error('Error generating palette:', error);
+        setError("Error generating palette");
+      } finally {
+        setLoading(false);
+      }
+  }
     }
   };
 
