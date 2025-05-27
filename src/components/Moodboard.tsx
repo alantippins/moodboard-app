@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowLeft, Play, Upload } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { motion } from "framer-motion";
 import { getAudioForMood } from "./mood-audio-map";
 import { Howl } from "howler";
@@ -551,6 +551,7 @@ function generateDescription(palette: Palette): string {
 }
 
 export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
+  const presetMoods = useMemo(() => ["stone", "celestial", "dusty peach"], []);
   const soundRef = useRef<Howl | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -608,24 +609,36 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
     noise();
   }, []);
 
-  if (!mounted) return null;
-
   // Always use local palettes for presets, API palette for generated moods
-  const presetMoods = ["stone", "celestial", "dusty peach"];
-  let resolvedPalette: Palette | null = null;
-  if (mood && presetMoods.includes(mood)) {
-    resolvedPalette = palettes[mood as keyof typeof palettes];
-  } else if (palette) {
-    resolvedPalette = palette;
-  }
+  const resolvedPalette = useMemo(() => {
+    if (!mounted) return null;
+
+    if (mood && presetMoods.includes(mood)) {
+      return palettes[mood as keyof typeof palettes];
+    } else if (palette) {
+      return palette;
+    }
+    return null;
+  }, [mood, palette, presetMoods, mounted]);
+
+  // Memoize heading and description based on resolved palette
+  const heading = useMemo(() => 
+    resolvedPalette ? generateHeading(resolvedPalette) : '', 
+    [resolvedPalette]
+  );
+  
+  const description = useMemo(() => 
+    resolvedPalette ? generateDescription(resolvedPalette) : '', 
+    [resolvedPalette]
+  );
 
   // Reverse so that 0 is lightest, 3 is darkest
-  const sortedSwatches = spreadSwatchesByLightness(
-    resolvedPalette?.swatches || []
-  ).reverse();
+  const sortedSwatches = useMemo(() => 
+    spreadSwatchesByLightness(resolvedPalette?.swatches || []).reverse(),
+    [resolvedPalette]
+  );
 
-  console.log("Mood:", mood, "Resolved Palette:", resolvedPalette);
-  if (!resolvedPalette) {
+  if (!mounted || !resolvedPalette) {
     return (
       <div className="flex flex-col items-center justify-center h-full">
         <div className="text-2xl font-bold mb-2">No mood selected</div>
@@ -812,7 +825,7 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
                     fontWeight: 600,
                   }}
                 >
-                  {generateHeading(resolvedPalette)}
+                  {heading}
                 </h2>
                 <p
                   className={`leading-relaxed ${
@@ -825,7 +838,7 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
                     ),
                   }}
                 >
-                  {generateDescription(resolvedPalette)}
+                  {description}
                 </p>
               </div>
             </div>

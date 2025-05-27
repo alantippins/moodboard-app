@@ -111,7 +111,8 @@ export function MoodCreator() {
         } else {
           setError(data.error || "Failed to generate palette");
         }
-      } catch (err) {
+      } catch (error: unknown) {
+      console.error('Error generating palette:', error);
         setError("Error generating palette");
       } finally {
         setLoading(false);
