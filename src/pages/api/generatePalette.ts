@@ -12,8 +12,9 @@ interface RateLimitEntry {
 const rateLimit = new Map<string, RateLimitEntry>();
 
 const RATE_LIMIT = {
-  windowMs: process.env.RATE_LIMIT_WINDOW_MS ? parseInt(process.env.RATE_LIMIT_WINDOW_MS) : 900000, // 15 minutes
-  max: process.env.RATE_LIMIT_MAX ? parseInt(process.env.RATE_LIMIT_MAX) : 100 // limit each IP to 100 requests per windowMs
+  // In development, set higher limits to avoid issues during testing
+  windowMs: process.env.RATE_LIMIT_WINDOW_MS ? parseInt(process.env.RATE_LIMIT_WINDOW_MS) : 60000, // 1 minute in development
+  max: process.env.RATE_LIMIT_MAX ? parseInt(process.env.RATE_LIMIT_MAX) : 50 // Higher limit for development
 };
 
 /**
@@ -70,6 +71,8 @@ function sanitizeInput(word: string): string {
 type ApiResponse = Palette | { error: string; resetTime?: Date };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse>) {
+  // Debug logging
+  console.log('API request received:', { method: req.method });
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -87,13 +90,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     });
   }
 
-  const { word, apiKey } = req.body;
+  const { word, originalWord, apiKey } = req.body;
+  // Use original word (with casing preserved) if provided, otherwise use the sanitized word
+  const displayWord = originalWord || word;
   
   // Sanitize input
   const sanitizedWord = sanitizeInput(word);
   
   if (!word || typeof word !== 'string') {
     return res.status(400).json({ error: 'Missing or invalid word' });
+  }
+  
+  // If sanitized word is empty after sanitization, return an error
+  if (!sanitizedWord) {
+    return res.status(400).json({ error: 'Word contains only invalid characters' });
   }
   
   if (!apiKey || typeof apiKey !== 'string') {
@@ -104,7 +114,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   const openai = new OpenAI({ apiKey });
 
   // Prompt for GPT
-  const prompt = `You are a designer AI. Given the mood word: "${sanitizedWord}", generate a JSON object for a moodboard palette with the following fields: name, background, backgroundAlt, accent, headingColor, textColor, swatches (array of 4 hex colors), fontPrimary, fontSecondary, and audio (suggest a genre or vibe, not a filename). Example output:\n{\n  "name": "Serene Blue",\n  "background": "#e0f7fa",\n  "backgroundAlt": "#b2ebf2",\n  "accent": "#0288d1",\n  "headingColor": "#01579b",\n  "textColor": "#263238",\n  "swatches": ["#e0f7fa", "#b2ebf2", "#0288d1", "#01579b"],\n  "fontPrimary": "Montserrat",\n  "fontSecondary": "Inter",\n  "audio": "calm ambient"\n}\nRespond with only the JSON, no explanation.`;
+  const prompt = `You are a designer AI. Given the mood word: "${sanitizedWord}", generate a JSON object for a moodboard palette with the following fields: name, background, backgroundAlt, accent, headingColor, textColor, swatches (array of 4 hex colors), fontPrimary, fontSecondary, and audio (suggest a genre or vibe, not a filename). IMPORTANT: Use the exact word "${displayWord}" as the name field. Example output:
+{
+  "name": "${displayWord}",
+  "background": "#e0f7fa",
+  "backgroundAlt": "#b2ebf2",
+  "accent": "#0288d1",
+  "headingColor": "#01579b",
+  "textColor": "#263238",
+  "swatches": ["#e0f7fa", "#b2ebf2", "#0288d1", "#01579b"],
+  "fontPrimary": "Montserrat",
+  "fontSecondary": "Inter",
+  "audio": "calm ambient"
+}
+Respond with only the JSON, no explanation.`;
 
   try {
     // Validate API key format (basic check)

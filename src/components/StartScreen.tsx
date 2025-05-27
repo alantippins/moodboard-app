@@ -79,9 +79,12 @@ export function MoodCreator() {
 
   // Handle moodboard generation on Enter
   const handleMoodboard = async () => {
-    const normalized = inputValue.trim().toLowerCase().replace(/[-_]/g, '').replace(/\s+/g, ' ');
+    // Keep original casing for display
+    const originalInput = inputValue.trim();
+    // Normalize for comparison and API
+    const normalized = originalInput.toLowerCase().replace(/[-_]/g, '').replace(/\s+/g, ' ');
     if (["stone", "celestial", "dusty peach"].includes(normalized)) {
-      setSelectedMood(normalized.replace(/\s+/g, '-'));
+      setSelectedMood(originalInput.replace(/\s+/g, '-'));
     } else if (normalized) {
       setLoading(true);
       setError(null);
@@ -98,25 +101,27 @@ export function MoodCreator() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
             word: normalized,
+            originalWord: originalInput,
             apiKey: apiKey 
           }),
         });
         const data = await res.json();
-        if (data.palette) {
+        // Check if response is a palette (has swatches) or an error object
+        if (data.swatches) {
           // Assign SVG generator for custom palettes if not present
-          if (!data.palette.svg) {
-            data.palette.svg = (props) => generateGeometricSVG(data.palette, data.palette.name || inputValue, 240);
+          if (!data.svg) {
+            data.svg = () => generateGeometricSVG(data, data.name || inputValue, 240);
           }
-          setGeneratedPalette(data.palette);
+          setGeneratedPalette(data);
         } else {
           setError(data.error || "Failed to generate palette");
         }
       } catch (error: unknown) {
       console.error('Error generating palette:', error);
-        setError("Error generating palette");
-      } finally {
-        setLoading(false);
-      }
+      setError("Error generating palette");
+    } finally {
+      setLoading(false);
+    }
     }
   };
 
