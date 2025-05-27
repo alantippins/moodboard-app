@@ -12,23 +12,31 @@ import Image from "next/image";
 
 import { palettes } from "@/data/palettes";
 
-// Helper: For a given background and swatch array, returns the darkest swatch if bg is light (L>0.5), or the lightest swatch if bg is dark.
+// Helper: For a given background and swatch array, returns a color with sufficient contrast for text
 function getSwatchLabelColor(bg: string, swatches: string[]): string {
   if (!swatches || swatches.length === 0) return "#000";
-  // Sort by OKLCH lightness
-  const byLightness = [...swatches].sort((a, b) => {
-    const lA = hexToOklch(a)?.l ?? 0;
-    const lB = hexToOklch(b)?.l ?? 0;
-    return lA - lB;
-  });
-  const lBg = hexToOklch(bg)?.l ?? 0;
-  if (lBg > 0.5) {
-    // Light bg, use darkest swatch
-    return byLightness[0];
-  } else {
-    // Dark bg, use lightest swatch
-    return byLightness[byLightness.length - 1];
+  
+  // Try to find a swatch with good contrast
+  let best = swatches[0];
+  let bestRatio = 1; // Minimum possible contrast ratio is 1:1
+  const minRequiredRatio = 4.5; // WCAG AA standard for normal text
+  
+  for (const s of swatches) {
+    if (s === bg) continue;
+    const ratio = getContrastRatio(bg, s);
+    if (ratio > bestRatio) {
+      bestRatio = ratio;
+      best = s;
+    }
   }
+  
+  // If no swatch has sufficient contrast, use black or white
+  if (bestRatio < minRequiredRatio) {
+    const bgLuminance = getLuminance(bg);
+    return bgLuminance > 0.5 ? '#000000' : '#ffffff';
+  }
+  
+  return best;
 }
 
 import {
@@ -80,26 +88,57 @@ import { converter } from "culori";
 // Create a converter for hex to oklch
 const hexToOklch = converter("oklch");
 
-// Get delta L (lightness) between two colors in OKLCH
-function deltaL(hex1: string, hex2: string) {
-  const c1 = hexToOklch(hex1);
-  const c2 = hexToOklch(hex2);
-  if (!c1 || !c2) return 0;
-  return Math.abs(c1.l - c2.l);
+// Note: We now use WCAG contrast ratio calculations instead of OKLCH delta L
+
+// Calculate relative luminance for WCAG contrast ratio
+function getLuminance(hexColor: string): number {
+  // Convert hex to rgb
+  const hex = hexColor.replace('#', '');
+  const r = parseInt(hex.substring(0, 2), 16) / 255;
+  const g = parseInt(hex.substring(2, 4), 16) / 255;
+  const b = parseInt(hex.substring(4, 6), 16) / 255;
+  
+  // Calculate luminance using WCAG formula
+  const R = r <= 0.03928 ? r / 12.92 : Math.pow((r + 0.055) / 1.055, 2.4);
+  const G = g <= 0.03928 ? g / 12.92 : Math.pow((g + 0.055) / 1.055, 2.4);
+  const B = b <= 0.03928 ? b / 12.92 : Math.pow((b + 0.055) / 1.055, 2.4);
+  
+  return 0.2126 * R + 0.7152 * G + 0.0722 * B;
+}
+
+// Calculate contrast ratio between two colors (WCAG)
+function getContrastRatio(color1: string, color2: string): number {
+  const lum1 = getLuminance(color1);
+  const lum2 = getLuminance(color2);
+  const lightest = Math.max(lum1, lum2);
+  const darkest = Math.min(lum1, lum2);
+  return (lightest + 0.05) / (darkest + 0.05);
 }
 
 // Return the palette swatch with the best accessible contrast; fallback to black/white if needed
 function getContrastSwatch(bg: string, swatches: string[]) {
+  if (!swatches || swatches.length === 0) return '#000';
+  
   let best = swatches[0];
-  let bestDelta = -1;
+  let bestRatio = 1; // Minimum possible contrast ratio is 1:1
+  const minRequiredRatio = 4.5; // WCAG AA standard for normal text
+  
+  // First try to find a swatch with good contrast
   for (const s of swatches) {
     if (s === bg) continue;
-    const dL = deltaL(bg, s);
-    if (dL > bestDelta) {
-      bestDelta = dL;
+    const ratio = getContrastRatio(bg, s);
+    if (ratio > bestRatio) {
+      bestRatio = ratio;
       best = s;
     }
   }
+  
+  // If no swatch has sufficient contrast, use black or white
+  if (bestRatio < minRequiredRatio) {
+    const bgLuminance = getLuminance(bg);
+    return bgLuminance > 0.5 ? '#000000' : '#ffffff';
+  }
+  
   return best;
 }
 

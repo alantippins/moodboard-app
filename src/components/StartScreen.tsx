@@ -11,7 +11,7 @@ import { palettes } from "@/data/palettes";
 import { ApiKeyModal } from "@/components/ApiKeyModal";
 import { ApiKeyPopover } from "@/components/ApiKeyPopover";
 import { generateGeometricSVG } from "@/utils/generateGeometricSVG";
-import { generatePaletteClient } from "@/utils/openaiClient";
+import { generatePaletteClient, checkRateLimit } from "@/utils/openaiClient";
 
 // Local storage key for the API key
 const API_KEY_STORAGE_KEY = "moodboard_openai_api_key";
@@ -103,38 +103,25 @@ export function MoodCreator() {
         return;
       }
       try {
-        // Check if we're on GitHub Pages (static deployment) or if we should use direct API calls
-        const isStaticDeployment =
-          window.location.hostname.includes("github.io") ||
-          process.env.NODE_ENV === "production";
-
         console.log("Environment:", process.env.NODE_ENV);
-        console.log("Is static deployment:", isStaticDeployment);
         console.log("API key status:", apiKeyStatus);
 
-        let result;
-
-        if (isStaticDeployment) {
-          // Use direct OpenAI API call from the browser for GitHub Pages
-          console.log("Using client-side OpenAI API for:", originalInput);
-          result = await generatePaletteClient(
-            normalized,
-            originalInput,
-            apiKey
-          );
-        } else {
-          // Use server API for local development
-          const res = await fetch("/api/generatePalette", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              word: normalized,
-              originalWord: originalInput,
-              apiKey: apiKey,
-            }),
-          });
-          result = await res.json();
+        // Check client-side rate limiting
+        const { allowed, resetTime } = checkRateLimit();
+        if (!allowed) {
+          const waitSeconds = Math.ceil((resetTime!.getTime() - Date.now()) / 1000);
+          setError(`Rate limit exceeded. Please try again in ${waitSeconds} seconds.`);
+          setLoading(false);
+          return;
         }
+
+        // Always use client-side OpenAI API calls (for GitHub Pages compatibility)
+        console.log("Using client-side OpenAI API for:", originalInput);
+        const result = await generatePaletteClient(
+          normalized,
+          originalInput,
+          apiKey
+        );
 
         // Check if response is a palette (has swatches) or an error object
         if ("swatches" in result) {

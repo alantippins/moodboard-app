@@ -57,6 +57,13 @@ export function ApiKeyModal({ isOpen, onClose, onSubmit }: ApiKeyModalProps) {
               Your key will be stored locally in your browser and never sent to
               our servers.
             </p>
+            <div className="bg-amber-50 border border-amber-200 rounded-md p-3 mb-4">
+              <h3 className="text-sm font-medium text-amber-800">Security Recommendation</h3>
+              <p className="text-xs text-amber-700 mt-1">
+                For security, we recommend setting up usage limits for your API key. 
+                Go to your <a href="https://platform.openai.com/account/billing/limits" target="_blank" rel="noopener noreferrer" className="underline">OpenAI account settings</a> and set a monthly spending cap to avoid unexpected charges.
+              </p>
+            </div>
 
             <div className="mb-4">
               <Input

@@ -36,9 +36,6 @@ jobs:
       - name: Build with Next.js
         run: NODE_ENV=production npm run build
 
-      - name: Export static site
-        run: npm run export
-
       # Create .nojekyll file to prevent Jekyll processing
       - name: Create .nojekyll file
         run: touch ./out/.nojekyll
