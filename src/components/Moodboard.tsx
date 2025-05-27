@@ -651,7 +651,7 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
 
   return (
     <motion.div
-      className="min-h-screen bg-white p-6 md:p-12 max-w-5xl mx-auto font-sans"
+      className="min-h-screen bg-white p-3 md:p-6 max-w-5xl mx-auto font-sans"
       initial={{ opacity: 0, scale: 0.97 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}

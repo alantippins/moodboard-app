@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
 import Image from "next/image";
-import { useState, useEffect } from "react"
-import { Palette } from '@/data/palettes';
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import Moodboard from "@/components/Moodboard"
-import { palettes } from "@/data/palettes"
-import { ApiKeyModal } from "@/components/ApiKeyModal"
-import { ApiKeyPopover } from "@/components/ApiKeyPopover"
+import { useState, useEffect } from "react";
+import { Palette } from "@/data/palettes";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import Moodboard from "@/components/Moodboard";
+import { palettes } from "@/data/palettes";
+import { ApiKeyModal } from "@/components/ApiKeyModal";
+import { ApiKeyPopover } from "@/components/ApiKeyPopover";
 import { generateGeometricSVG } from "@/utils/generateGeometricSVG";
 import { generatePaletteClient } from "@/utils/openaiClient";
 
@@ -18,18 +18,22 @@ const API_KEY_STORAGE_KEY = "moodboard_openai_api_key";
 
 export function MoodCreator() {
   const [inputValue, setInputValue] = useState("");
-  const [selectedMood, setSelectedMood] = useState<string | null>(null)
-  const [generatedPalette, setGeneratedPalette] = useState<Palette | null>(null);
+  const [selectedMood, setSelectedMood] = useState<string | null>(null);
+  const [generatedPalette, setGeneratedPalette] = useState<Palette | null>(
+    null
+  );
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   // API key state
   const [apiKey, setApiKey] = useState<string>("");
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
-  const [apiKeyStatus, setApiKeyStatus] = useState<"set" | "not-set" | "loading">("loading");
+  const [apiKeyStatus, setApiKeyStatus] = useState<
+    "set" | "not-set" | "loading"
+  >("loading");
   const [pendingGeneration, setPendingGeneration] = useState(false);
-  
+
   // Load API key from localStorage on component mount
   useEffect(() => {
     const storedApiKey = localStorage.getItem(API_KEY_STORAGE_KEY);
@@ -40,7 +44,7 @@ export function MoodCreator() {
       setApiKeyStatus("not-set");
     }
   }, []);
-  
+
   // Save API key to localStorage
   const saveApiKey = async (key: string) => {
     localStorage.setItem(API_KEY_STORAGE_KEY, key);
@@ -52,7 +56,6 @@ export function MoodCreator() {
     }
   };
 
-  
   // Clear API key from localStorage
   const clearApiKey = () => {
     localStorage.removeItem(API_KEY_STORAGE_KEY);
@@ -72,20 +75,23 @@ export function MoodCreator() {
         times: [0, 0.3, 1],
       },
     },
-  }
+  };
 
   const handleMoodSelect = (mood: string) => {
-    setSelectedMood(mood === selectedMood ? null : mood)
-  }
+    setSelectedMood(mood === selectedMood ? null : mood);
+  };
 
   // Handle moodboard generation on Enter
   const handleMoodboard = async () => {
     // Keep original casing for display
     const originalInput = inputValue.trim();
     // Normalize for comparison and API
-    const normalized = originalInput.toLowerCase().replace(/[-_]/g, '').replace(/\s+/g, ' ');
+    const normalized = originalInput
+      .toLowerCase()
+      .replace(/[-_]/g, "")
+      .replace(/\s+/g, " ");
     if (["stone", "celestial", "dusty peach"].includes(normalized)) {
-      setSelectedMood(originalInput.replace(/\s+/g, '-'));
+      setSelectedMood(originalInput.replace(/\s+/g, "-"));
     } else if (normalized) {
       setLoading(true);
       setError(null);
@@ -98,67 +104,83 @@ export function MoodCreator() {
       }
       try {
         // Check if we're on GitHub Pages (static deployment) or if we should use direct API calls
-        const isStaticDeployment = window.location.hostname.includes('github.io') || 
-                                 process.env.NODE_ENV === 'production';
-        
-        console.log('Environment:', process.env.NODE_ENV);
-        console.log('Is static deployment:', isStaticDeployment);
-        console.log('API key status:', apiKeyStatus);
-        
+        const isStaticDeployment =
+          window.location.hostname.includes("github.io") ||
+          process.env.NODE_ENV === "production";
+
+        console.log("Environment:", process.env.NODE_ENV);
+        console.log("Is static deployment:", isStaticDeployment);
+        console.log("API key status:", apiKeyStatus);
+
         let result;
-        
+
         if (isStaticDeployment) {
           // Use direct OpenAI API call from the browser for GitHub Pages
-          console.log('Using client-side OpenAI API for:', originalInput);
-          result = await generatePaletteClient(normalized, originalInput, apiKey);
+          console.log("Using client-side OpenAI API for:", originalInput);
+          result = await generatePaletteClient(
+            normalized,
+            originalInput,
+            apiKey
+          );
         } else {
           // Use server API for local development
-          const res = await fetch('/api/generatePalette', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
+          const res = await fetch("/api/generatePalette", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
               word: normalized,
               originalWord: originalInput,
-              apiKey: apiKey 
+              apiKey: apiKey,
             }),
           });
           result = await res.json();
         }
-        
+
         // Check if response is a palette (has swatches) or an error object
-        if ('swatches' in result) {
+        if ("swatches" in result) {
           // We have a valid palette
           const palette = result as Palette;
-          
+
           // Assign SVG generator for custom palettes if not present
           if (!palette.svg) {
-            palette.svg = () => generateGeometricSVG(palette, palette.name || originalInput, 240);
+            palette.svg = () =>
+              generateGeometricSVG(palette, palette.name || originalInput, 240);
           }
-          
+
           setGeneratedPalette(palette);
-        } else if ('error' in result) {
+        } else if ("error" in result) {
           // We have an error
           setError(result.error || "Failed to generate palette");
         } else {
           setError("Received invalid response format");
         }
       } catch (error: unknown) {
-      console.error('Error generating palette:', error);
-      setError("Error generating palette");
-    } finally {
-      setLoading(false);
-    }
+        console.error("Error generating palette:", error);
+        setError("Error generating palette");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
   if (generatedPalette) {
-    return <Moodboard palette={generatedPalette} onBack={() => { setGeneratedPalette(null); setInputValue(""); }} />;
+    return (
+      <Moodboard
+        palette={generatedPalette}
+        onBack={() => {
+          setGeneratedPalette(null);
+          setInputValue("");
+        }}
+      />
+    );
   }
 
   if (selectedMood) {
     // Normalize mood for palette lookup (replace dashes with spaces, lowercase)
-    const normalizedMood = selectedMood.replace(/-/g, ' ').toLowerCase();
-    return <Moodboard mood={normalizedMood} onBack={() => setSelectedMood(null)} />;
+    const normalizedMood = selectedMood.replace(/-/g, " ").toLowerCase();
+    return (
+      <Moodboard mood={normalizedMood} onBack={() => setSelectedMood(null)} />
+    );
   }
 
   return (
@@ -177,7 +199,11 @@ export function MoodCreator() {
       <div className="relative mb-4">
         <Input
           type="text"
-          placeholder={loading ? "Generating moodboard..." : "Enter a mood word (e.g. cozy, vibrant)"}
+          placeholder={
+            loading
+              ? "Generating moodboard..."
+              : "Enter a mood word (e.g. cozy, vibrant)"
+          }
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           className="w-full pr-10"
@@ -189,13 +215,25 @@ export function MoodCreator() {
 
         {/* Submit button or loading spinner */}
         {loading ? (
-          <motion.div 
+          <motion.div
             className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5"
             animate={{ rotate: 360 }}
             transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" stroke="#717680" strokeWidth="2" strokeLinecap="round" strokeDasharray="1 6" />
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z"
+                stroke="#717680"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeDasharray="1 6"
+              />
             </svg>
           </motion.div>
         ) : (
@@ -203,11 +241,24 @@ export function MoodCreator() {
             variant="ghost"
             size="icon"
             className="absolute right-2 top-1/2 -translate-y-1/2 text-[#717680] hover:text-[#535862] hover:bg-transparent cursor-pointer"
-            disabled={inputValue.trim() === ''}
+            disabled={inputValue.trim() === ""}
             aria-label="Submit mood word"
             onClick={handleMoodboard}
           >
-            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14m-7-7l7 7-7 7" /></svg>
+            <svg
+              width="20"
+              height="20"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M5 12h14m-7-7l7 7-7 7"
+              />
+            </svg>
           </Button>
         )}
       </div>
@@ -227,11 +278,20 @@ export function MoodCreator() {
         >
           <Button
             variant="outline"
-            className="rounded-lg px-4 py-2 text-sm font-medium flex items-center gap-1 transition-colors duration-300 cursor-pointer shadow-none outline-none ring-0 focus:ring-0 focus-visible:ring-0 border-2"
+            className="rounded-lg px-3 py-2 text-sm font-medium flex items-center gap-1 transition-colors duration-300 cursor-pointer shadow-none outline-none ring-0 focus:ring-0 focus-visible:ring-0 border-2"
             style={{
-              background: selectedMood === "stone" ? palettes["stone"].background : palettes["stone"].background,
-              borderColor: selectedMood === "stone" ? palettes["stone"].accent : "transparent",
-              color: selectedMood === "stone" ? palettes["stone"].headingColor : palettes["stone"].textColor
+              background:
+                selectedMood === "stone"
+                  ? palettes["stone"].background
+                  : palettes["stone"].background,
+              borderColor:
+                selectedMood === "stone"
+                  ? palettes["stone"].accent
+                  : "transparent",
+              color:
+                selectedMood === "stone"
+                  ? palettes["stone"].headingColor
+                  : palettes["stone"].textColor,
             }}
             onClick={() => handleMoodSelect("stone")}
           >
@@ -242,11 +302,17 @@ export function MoodCreator() {
               whileTap={{ scale: 0.95, rotate: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 18 }}
             >
-              {typeof palettes["stone"].svg === 'function'
-  ? palettes["stone"].svg({ width: 20, height: 20 })
-  : typeof palettes["stone"].svg === 'string' && palettes["stone"].svg
-    ? <Image src={palettes["stone"].svg} width={20} height={20} alt="Stone illustration" />
-    : null}
+              {typeof palettes["stone"].svg === "function" ? (
+                palettes["stone"].svg({ width: 20, height: 20 })
+              ) : typeof palettes["stone"].svg === "string" &&
+                palettes["stone"].svg ? (
+                <Image
+                  src={palettes["stone"].svg}
+                  width={20}
+                  height={20}
+                  alt="Stone illustration"
+                />
+              ) : null}
             </motion.span>
             Stone
           </Button>
@@ -263,9 +329,18 @@ export function MoodCreator() {
             variant="outline"
             className="rounded-lg px-4 py-2 text-sm font-medium flex items-center gap-1 transition-colors duration-300 cursor-pointer shadow-none outline-none ring-0 focus:ring-0 focus-visible:ring-0 border-2"
             style={{
-              background: selectedMood === "celestial" ? palettes["celestial"].background : palettes["celestial"].background,
-              borderColor: selectedMood === "celestial" ? palettes["celestial"].accent : "transparent",
-              color: selectedMood === "celestial" ? palettes["celestial"].headingColor : palettes["celestial"].textColor
+              background:
+                selectedMood === "celestial"
+                  ? palettes["celestial"].background
+                  : palettes["celestial"].background,
+              borderColor:
+                selectedMood === "celestial"
+                  ? palettes["celestial"].accent
+                  : "transparent",
+              color:
+                selectedMood === "celestial"
+                  ? palettes["celestial"].headingColor
+                  : palettes["celestial"].textColor,
             }}
             onClick={() => handleMoodSelect("celestial")}
           >
@@ -280,8 +355,7 @@ export function MoodCreator() {
                     }
                   : {}
               }
-            >
-            </motion.span>
+            ></motion.span>
             <motion.span
               className="flex items-center"
               style={{ width: 20, height: 20 }}
@@ -289,11 +363,17 @@ export function MoodCreator() {
               whileTap={{ scale: 0.95, rotate: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 18 }}
             >
-              {typeof palettes["celestial"].svg === 'function'
-  ? palettes["celestial"].svg({ width: 20, height: 20 })
-  : typeof palettes["celestial"].svg === 'string' && palettes["celestial"].svg
-    ? <Image src={palettes["celestial"].svg} width={20} height={20} alt="Celestial illustration" />
-    : null}
+              {typeof palettes["celestial"].svg === "function" ? (
+                palettes["celestial"].svg({ width: 20, height: 20 })
+              ) : typeof palettes["celestial"].svg === "string" &&
+                palettes["celestial"].svg ? (
+                <Image
+                  src={palettes["celestial"].svg}
+                  width={20}
+                  height={20}
+                  alt="Celestial illustration"
+                />
+              ) : null}
             </motion.span>
             Celestial
           </Button>
@@ -310,9 +390,18 @@ export function MoodCreator() {
             variant="outline"
             className="rounded-lg px-4 py-2 text-sm font-medium flex items-center gap-1 transition-colors duration-300 cursor-pointer shadow-none outline-none ring-0 focus:ring-0 focus-visible:ring-0 border-2"
             style={{
-              background: selectedMood === "dusty-peach" ? palettes["dusty peach"].background : palettes["dusty peach"].background,
-              borderColor: selectedMood === "dusty-peach" ? palettes["dusty peach"].accent : "transparent",
-              color: selectedMood === "dusty-peach" ? palettes["dusty peach"].headingColor : palettes["dusty peach"].textColor
+              background:
+                selectedMood === "dusty-peach"
+                  ? palettes["dusty peach"].background
+                  : palettes["dusty peach"].background,
+              borderColor:
+                selectedMood === "dusty-peach"
+                  ? palettes["dusty peach"].accent
+                  : "transparent",
+              color:
+                selectedMood === "dusty-peach"
+                  ? palettes["dusty peach"].headingColor
+                  : palettes["dusty peach"].textColor,
             }}
             onClick={() => handleMoodSelect("dusty-peach")}
           >
@@ -327,8 +416,7 @@ export function MoodCreator() {
                     }
                   : {}
               }
-            >
-            </motion.span>
+            ></motion.span>
             <motion.span
               className="flex items-center"
               style={{ width: 20, height: 20 }}
@@ -336,11 +424,17 @@ export function MoodCreator() {
               whileTap={{ scale: 0.95, rotate: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 18 }}
             >
-              {typeof palettes["dusty peach"].svg === 'function'
-  ? palettes["dusty peach"].svg({ width: 20, height: 20 })
-  : typeof palettes["dusty peach"].svg === 'string' && palettes["dusty peach"].svg
-    ? <Image src={palettes["dusty peach"].svg} width={20} height={20} alt="Dusty Peach illustration" />
-    : null}
+              {typeof palettes["dusty peach"].svg === "function" ? (
+                palettes["dusty peach"].svg({ width: 20, height: 20 })
+              ) : typeof palettes["dusty peach"].svg === "string" &&
+                palettes["dusty peach"].svg ? (
+                <Image
+                  src={palettes["dusty peach"].svg}
+                  width={20}
+                  height={20}
+                  alt="Dusty Peach illustration"
+                />
+              ) : null}
             </motion.span>
             Dusty Peach
           </Button>
@@ -361,7 +455,7 @@ export function MoodCreator() {
         </motion.div>
       )}
       {loading && (
-        <motion.div 
+        <motion.div
           className="mt-3 text-center text-sm text-[#717680]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -375,12 +469,10 @@ export function MoodCreator() {
           </motion.span>
         </motion.div>
       )}
-      {error && (
-        <div className="mt-4 text-red-500 text-sm">{error}</div>
-      )}
-      
+      {error && <div className="mt-4 text-red-500 text-sm">{error}</div>}
+
       {/* API Key Modal */}
-      <ApiKeyModal 
+      <ApiKeyModal
         isOpen={showApiKeyModal}
         onClose={() => setShowApiKeyModal(false)}
         onSubmit={saveApiKey}
