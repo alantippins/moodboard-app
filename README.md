@@ -4,7 +4,7 @@
 
 **Verbal** is a creative inspiration tool that transforms words into generative micro moodboards—combining color, typography, shape, and sound to spark creativity.
 
-[Demo](https://verbal.design) · [Report Bug](https://github.com/yourusername/verbal/issues) · [Request Feature](https://github.com/yourusername/verbal/issues)
+[Demo](https://alantippins.com/moodboard-app/) · [Report Bug](https://github.com/alantippins/moodboard-app/issues) · [Request Feature](https://github.com/alantippins/moodboard-app/issues)
 
 </div>
 
@@ -26,12 +26,14 @@
 ### Installation
 
 1. Clone the repository
+
    ```sh
-   git clone https://github.com/yourusername/verbal.git
+   git clone https://github.com/alantippins/moodboard-app.git
    cd verbal
    ```
 
 2. Install dependencies
+
    ```sh
    npm install
    # or
@@ -39,6 +41,7 @@
    ```
 
 3. Start the development server
+
    ```sh
    npm run dev
    # or
@@ -59,21 +62,21 @@
 
 Verbal transforms words into complete design experiences. Type any word like `"euphoric"`, `"dusty peach"`, or `"brutalist"` and instantly receive:
 
-- A harmonious color palette that captures the essence of your word  
-- Typography pairings that complement the mood  
-- A generative shape/pattern that evokes the feeling of your word  
-- A sound/music mood suggestion to complete the sensory experience  
+- A harmonious color palette that captures the essence of your word
+- Typography pairings that complement the mood
+- A generative shape/pattern that evokes the feeling of your word
+- A sound/music mood suggestion to complete the sensory experience
 
 ## 👇 What It Does
 
 You speak or type a word like `"euphoric"`, `"dusty peach"`, or `"brutalist"`.  
 Verbal returns a tightly curated aesthetic response:
 
-- 🎨 Color palette  
-- 🧠 Font pairing  
-- 🔊 Ambient sound  
-- 🌀 Shape or visual motif  
-- ✍️ Optional mood label or tagline  
+- 🎨 Color palette
+- 🧠 Font pairing
+- 🔊 Ambient sound
+- 🌀 Shape or visual motif
+- ✍️ Optional mood label or tagline
 
 ## Why Verbal?
 
@@ -81,25 +84,25 @@ As creators, we often begin with a single word or concept. Verbal helps bridge t
 
 ## 🎯 Why It Exists
 
-Designers, writers, and musicians often start with a **feeling**—Verbal lets you *interface with feeling*.  
+Designers, writers, and musicians often start with a **feeling**—Verbal lets you _interface with feeling_.  
 It's a creative toy with professional applications:
 
-- Moodboard starter  
-- Naming exercise  
-- Brand tone exploration  
-- Visual tone-of-voice prototype  
+- Moodboard starter
+- Naming exercise
+- Brand tone exploration
+- Visual tone-of-voice prototype
 
 ## Features
 
-- **Word-based Generation**: Type any word to generate a complete micro moodboard  
-- **Color Palette**: Receive a harmonious set of colors that capture the word's essence  
-- **Typography**: Get font pairing suggestions that match the mood  
-- **Shape Generation**: See a unique generative pattern based on the word  
-- **Sound Suggestions**: Receive audio mood suggestions that complement the visual elements  
+- **Word-based Generation**: Type any word to generate a complete micro moodboard
+- **Color Palette**: Receive a harmonious set of colors that capture the word's essence
+- **Typography**: Get font pairing suggestions that match the mood
+- **Shape Generation**: See a unique generative pattern based on the word
+- **Sound Suggestions**: Receive audio mood suggestions that complement the visual elements
 
 ## 💻 Usage
 
-1. Visit the app at [verbal.design](https://verbal.design)
+1. Visit the app at [verbal.design](https://alantippins.com/moodboard-app/)
 2. Type any word or phrase
 3. Get instant visual and audio inspiration
 4. Export your moodboard or copy color codes
@@ -119,7 +122,6 @@ Verbal requires an OpenAI API key for advanced word processing. You can:
 2. Add your own API key in the settings
 3. Self-host with your own key
 
-
 ## 📝 Roadmap
 
 - [ ] Voice input support
@@ -127,7 +129,7 @@ Verbal requires an OpenAI API key for advanced word processing. You can:
 - [ ] Export to design tokens
 - [ ] Figma plugin
 
-See the [open issues](https://github.com/yourusername/verbal/issues) for a full list of proposed features and known issues.
+See the [open issues](https://github.com/alantippins/moodboard-app/issues) for a full list of proposed features and known issues.
 
 ## 🧪 Development
 
