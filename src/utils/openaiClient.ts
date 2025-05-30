@@ -66,23 +66,26 @@ export async function generatePaletteClient(word: string, originalWord: string, 
     }
 
     // Prompt for GPT
-    const prompt = `You are a designer AI. Given the mood word: "${sanitizedWord}", generate a JSON object for a moodboard palette with the following fields: name, background, backgroundAlt, accent, headingColor, textColor, swatches (array of 4 hex colors), fontPrimary, fontSecondary, and audio (suggest a genre or vibe, not a filename). IMPORTANT: Use the exact word "${originalWord}" as the name field. Example output:
-{
-  "name": "${originalWord}",
-  "background": "#e0f7fa",
-  "backgroundAlt": "#b2ebf2",
-  "accent": "#0288d1",
-  "headingColor": "#01579b",
-  "textColor": "#263238",
-  "swatches": ["#e0f7fa", "#b2ebf2", "#0288d1", "#01579b"],
-  "fontPrimary": "Montserrat",
-  "fontSecondary": "Inter",
-  "audio": "calm ambient"
-}
+    const prompt = `You are a designer AI specializing in creating unique color palettes that evoke specific moods. 
+
+For the mood word: "${sanitizedWord}", create a JSON object for a moodboard palette that STRONGLY reflects the emotional and visual qualities of this specific word.
+
+CRITICAL: Each word MUST have a UNIQUE palette that reflects its meaning. For example:
+- "blue" should have predominantly blue tones
+- "fire" should have warm reds and oranges
+- "forest" should have natural greens
+- "night" should have dark blues and purples
+
+Include these fields: name, background, backgroundAlt, accent, headingColor, textColor, swatches (array of 4 hex colors), fontPrimary, fontSecondary, and audio (suggest a genre or vibe, not a filename).
+
+IMPORTANT: Use the exact word "${originalWord}" as the name field. The palette MUST be visually cohesive but UNIQUE to this specific word.
+
 Respond with only the JSON, no explanation.`;
 
     // Make request to OpenAI API directly
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    let response;
+    try {
+      response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -95,24 +98,77 @@ Respond with only the JSON, no explanation.`;
           { role: 'user', content: prompt },
         ],
         max_tokens: 500,
-        temperature: 0.7,
+        temperature: 0.9, // Higher temperature for more creative and diverse responses
       })
-    });
+      });
+      // Request completed successfully
+    } catch (networkError) {
+      console.error('Network error during API call:', networkError);
+      return { error: 'Network error: Failed to connect to OpenAI API' };
+    }
 
     if (!response.ok) {
       const errorData = await response.json();
+      console.error('OpenAI API error:', errorData);
       return { error: errorData.error?.message || 'Failed to generate palette' };
     }
 
-    const data = await response.json();
-    const text = data.choices[0].message?.content?.trim() || '';
+    let data;
+    try {
+      data = await response.json();
+    } catch (jsonError) {
+      console.error('Failed to parse API response as JSON:', jsonError);
+      return { error: 'Failed to parse API response' };
+    }
+    
+    const text = data.choices[0]?.message?.content?.trim() || '';
+    if (!text) {
+      console.error('Empty or invalid response from API');
+      return { error: 'Empty response from API' };
+    }
     
     try {
-      const palette: Palette = JSON.parse(text);
+      // Try to clean up the response if it's not valid JSON
+      let cleanedText = text;
+      
+      // Sometimes the model includes markdown code block markers
+      if (cleanedText.includes('```')) {
+        cleanedText = cleanedText.replace(/```json\n|```/g, '');
+      }
+      
+      // Sometimes the model adds explanations before or after the JSON
+      const jsonStartIndex = cleanedText.indexOf('{');
+      const jsonEndIndex = cleanedText.lastIndexOf('}') + 1;
+      
+      if (jsonStartIndex >= 0 && jsonEndIndex > jsonStartIndex) {
+        cleanedText = cleanedText.substring(jsonStartIndex, jsonEndIndex);
+      }
+      
+      let palette: Palette;
+      
+      try {
+        palette = JSON.parse(cleanedText);
+      } catch {
+        // Last resort: try to fix common JSON syntax errors
+        cleanedText = cleanedText
+          .replace(/([{,])\s*([\w]+)\s*:/g, '$1"$2":') // Add quotes to keys
+          .replace(/:\s*'([^']*)'/g, ':"$1"') // Replace single quotes with double quotes
+          .replace(/,\s*}/g, '}'); // Remove trailing commas
+          
+        palette = JSON.parse(cleanedText);
+      }
       
       // --- Palette Post-processing to ensure light & dark swatches and proper contrast ---
-      const { converter } = await import('culori');
-      const hexToOklch = converter('oklch');
+      let hexToOklch;
+      try {
+        const { converter } = await import('culori');
+        hexToOklch = converter('oklch');
+      } catch (importError) {
+        console.error('Failed to import color processing library:', importError);
+        // Continue without color processing if import fails
+        // Return the palette as-is without post-processing
+        return palette;
+      }
       const lightThreshold = 0.85;
       const darkThreshold = 0.25;
       const swatches = palette.swatches.slice(0, 4); // ensure max 4
@@ -177,15 +233,15 @@ Respond with only the JSON, no explanation.`;
       // --- End post-processing ---
       
       return palette;
-    } catch {
+    } catch (parseError) {
       // If we can't parse the response, fall back to a static palette
-      console.error('Failed to parse OpenAI response, using fallback palette');
+      console.error('Failed to parse OpenAI response:', parseError);
       const fallbackPalette = getStaticPalette(word);
       fallbackPalette.name = originalWord;
       return fallbackPalette;
     }
   } catch (err) {
-    console.error('Error generating palette:', err);
+    console.error('[DEBUG] Error generating palette:', err);
     return { error: err instanceof Error ? err.message : 'Failed to generate palette' };
   }
 }

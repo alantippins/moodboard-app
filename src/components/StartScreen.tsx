@@ -34,7 +34,7 @@ export function MoodCreator() {
   >("loading");
   const [pendingGeneration, setPendingGeneration] = useState(false);
 
-  // Load API key from localStorage on component mount
+  // Load API key from localStorage and preload libraries on component mount
   useEffect(() => {
     const storedApiKey = localStorage.getItem(API_KEY_STORAGE_KEY);
     if (storedApiKey) {
@@ -43,6 +43,13 @@ export function MoodCreator() {
     } else {
       setApiKeyStatus("not-set");
     }
+    
+    // Preload culori library to avoid issues on first palette generation
+    import('culori').then(() => {
+      // Library preloaded successfully
+    }).catch(err => {
+      console.error('Failed to preload color processing library:', err);
+    });
   }, []);
 
   // Save API key to localStorage
@@ -90,7 +97,9 @@ export function MoodCreator() {
       .toLowerCase()
       .replace(/[-_]/g, "")
       .replace(/\s+/g, " ");
-    if (["stone", "celestial", "dusty peach"].includes(normalized)) {
+    // Only use predefined palettes for exact matches of these specific words
+    if (["stone", "celestial", "dusty peach"].includes(normalized) && 
+        !["stone", "celestial", "dusty peach"].some(word => normalized !== word && normalized.includes(word))) {
       setSelectedMood(originalInput.replace(/\s+/g, "-"));
     } else if (normalized) {
       setLoading(true);
@@ -117,6 +126,17 @@ export function MoodCreator() {
 
         // Always use client-side OpenAI API calls (for GitHub Pages compatibility)
         console.log("Using client-side OpenAI API for:", originalInput);
+        console.log('[DEBUG] API key status before call:', apiKeyStatus);
+        console.log('[DEBUG] API key length:', apiKey ? apiKey.length : 0);
+        
+        // Verify API key is properly loaded
+        if (!apiKey || apiKey.length < 10) {
+          console.error('[DEBUG] API key appears invalid or missing before API call');
+          setError('API key appears invalid. Please try setting it again.');
+          setLoading(false);
+          return;
+        }
+        
         const result = await generatePaletteClient(
           normalized,
           originalInput,

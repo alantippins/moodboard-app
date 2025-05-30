@@ -134,15 +134,12 @@ export function getStaticPalette(word: string): Palette {
     return staticPalettes[normalizedWord];
   }
   
-  // Fuzzy matches
-  for (const [key, palette] of Object.entries(staticPalettes)) {
-    if (normalizedWord.includes(key) || key.includes(normalizedWord)) {
-      return palette;
-    }
-  }
+  // Default to a fixed palette for consistency
+  // This makes it obvious when we're not getting a unique palette from OpenAI
+  const fallbackPalette = {
+    ...staticPalettes['celestial'],
+    name: word
+  };
   
-  // Default to a random palette if no match
-  const keys = Object.keys(staticPalettes);
-  const randomKey = keys[Math.floor(Math.random() * keys.length)];
-  return staticPalettes[randomKey];
+  return fallbackPalette;
 }
