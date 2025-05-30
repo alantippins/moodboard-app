@@ -983,12 +983,24 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
                           }
                           // Create a new Howl instance for this mood
                           const audioFile = getAudioForMood(mood || resolvedPalette.name || "");
+                          // Use correct asset prefix for GitHub Pages static deployment
+                          const isProd = typeof window !== 'undefined' && window.location.pathname.startsWith('/moodboard-app');
+                          const audioPrefix = isProd ? '/moodboard-app/audio/' : '/audio/';
+                          const audioPath = audioPrefix + audioFile;
                           const sound = new Howl({
-                            src: ["/audio/" + audioFile],
+                            src: [audioPath],
                             html5: true,
                             volume: 0.6,
                             onend: () => setIsPlaying(false),
-                            onloaderror: () => setIsPlaying(false)
+                            onloaderror: (id, err) => {
+                              setIsPlaying(false);
+                              setToastMsg(`Failed to load audio: ${audioFile}`);
+                              setShowToast(true);
+                              if (typeof window !== 'undefined') {
+                                // eslint-disable-next-line no-console
+                                console.error('Audio failed to load:', audioPath, err);
+                              }
+                            }
                           });
                           soundRef.current = sound;
                           sound.play();
