@@ -676,6 +676,38 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
     () => spreadSwatchesByLightness(resolvedPalette?.swatches || []).reverse(),
     [resolvedPalette]
   );
+  
+  // Set up audio playback
+  useEffect(() => {
+    if (resolvedPalette && mood) {
+      // Clean up any existing sound
+      if (soundRef.current) {
+        soundRef.current.stop();
+        soundRef.current.unload();
+      }
+      
+      const audioFile = getAudioForMood(mood);
+      soundRef.current = new Howl({
+        src: [`/audio/${audioFile}`],
+        html5: true,
+        volume: 0.5,
+        onend: () => {
+          setIsPlaying(false);
+        },
+        onloaderror: (id, error) => {
+          console.error('Error loading audio:', error);
+          setIsPlaying(false);
+        }
+      });
+    }
+    
+    return () => {
+      if (soundRef.current) {
+        soundRef.current.stop();
+        soundRef.current.unload();
+      }
+    };
+  }, [mood, resolvedPalette]);
 
   if (!mounted || !resolvedPalette) {
     return (
@@ -896,51 +928,7 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
                     className="flex flex-col items-center justify-center"
                     style={{ height: 64 }}
                   >
-                    {!isPlaying ? (
-                      <motion.button
-                        className="flex flex-col items-center justify-center transition-all duration-300 outline-none ring-0 focus:ring-0 focus-visible:ring-0 cursor-pointer"
-                        style={{
-                          color: resolvedPalette.headingColor,
-                          background: "transparent",
-                        }}
-                        whileHover={{ scale: 1.08 }}
-                        whileTap={{ scale: 0.96 }}
-                        aria-label={`Play ${resolvedPalette.audio
-                          .replace(/[-_]/g, " ")
-                          .replace(/\.mp3$/, "")}`}
-                        onClick={() => {
-                          if (!soundRef.current) {
-                            const sound = new Howl({
-                              src: [
-                                "/audio/" +
-                                  getAudioForMood(
-                                    mood || resolvedPalette.name || ""
-                                  ),
-                              ],
-                              onend: () => setIsPlaying(false),
-                              onloaderror: () => {
-                                alert(
-                                  "Audio file could not be loaded. Please check file path."
-                                );
-                                setIsPlaying(false);
-                              },
-                            });
-                            soundRef.current = sound;
-                          }
-                          soundRef.current.play();
-                          setIsPlaying(true);
-                        }}
-                      >
-                        <Play
-                          className="h-16 w-16 mb-0"
-                          fill={getContrastSwatch(
-                            resolvedPalette.accent,
-                            resolvedPalette.swatches
-                          )}
-                          stroke="none"
-                        />
-                      </motion.button>
-                    ) : (
+                    {isPlaying ? (
                       <motion.button
                         className="flex flex-col items-center justify-center transition-all duration-300 outline-none ring-0 focus:ring-0 focus-visible:ring-0 cursor-pointer"
                         style={{
@@ -970,20 +958,51 @@ export default function Moodboard({ mood, palette, onBack }: MoodboardProps) {
                             resolvedPalette.accent,
                             resolvedPalette.swatches
                           )}
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          aria-hidden="true"
-                          style={{
-                            borderRadius: 8,
-                            color: getContrastSwatch(
-                              resolvedPalette.accent,
-                              resolvedPalette.swatches
-                            ),
-                          }}
+                          strokeWidth="0"
                         >
                           <rect x="6" y="6" width="12" height="12" rx="3" />
                         </svg>
+                      </motion.button>
+                    ) : (
+                      <motion.button
+                        className="flex flex-col items-center justify-center transition-all duration-300 outline-none ring-0 focus:ring-0 focus-visible:ring-0 cursor-pointer"
+                        style={{
+                          color: resolvedPalette.headingColor,
+                          background: "transparent",
+                          border: "none",
+                          boxShadow: "none",
+                        }}
+                        whileHover={{ scale: 1.08 }}
+                        whileTap={{ scale: 0.96 }}
+                        aria-label={`Play ${mood} soundtrack`}
+                        onClick={() => {
+                          // Stop any existing audio first
+                          if (soundRef.current) {
+                            soundRef.current.stop();
+                            soundRef.current.unload();
+                          }
+                          // Create a new Howl instance for this mood
+                          const audioFile = getAudioForMood(mood || resolvedPalette.name || "");
+                          const sound = new Howl({
+                            src: ["/audio/" + audioFile],
+                            html5: true,
+                            volume: 0.6,
+                            onend: () => setIsPlaying(false),
+                            onloaderror: () => setIsPlaying(false)
+                          });
+                          soundRef.current = sound;
+                          sound.play();
+                          setIsPlaying(true);
+                        }}
+                      >
+                        <Play
+                          className="h-16 w-16 mb-0"
+                          fill={getContrastSwatch(
+                            resolvedPalette.accent,
+                            resolvedPalette.swatches
+                          )}
+                          stroke="none"
+                        />
                       </motion.button>
                     )}
                   </div>
